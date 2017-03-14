@@ -49,9 +49,15 @@
     <Compile Include="Model\UserInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Poz1.BLE.Core">
-      <HintPath>..\..\Poz1.BLE\Poz1.BLE.Library\Poz1.BLE.Core\bin\Debug\Poz1.BLE.Core.dll</HintPath>
+    <Reference Include="Plugin.BLE.Abstractions">
+      <HintPath>..\packages\Plugin.BLE.1.2.1\lib\portable-net45+win8+wpa81+wp8\Plugin.BLE.Abstractions.dll</HintPath>
     </Reference>
+    <Reference Include="Plugin.BLE">
+      <HintPath>..\packages\Plugin.BLE.1.2.1\lib\portable-net45+win8+wpa81+wp8\Plugin.BLE.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,15 +1,17 @@
-﻿using Poz1.BLE.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
+using Plugin.BLE;
+using Plugin.BLE.Abstractions;
+using Plugin.BLE.Abstractions.Contracts;
 
 namespace Poz1.CDK.MiBand
 {
     public class Band
     {
-        private IDevice _band;
+		private IDevice _band;
         private TaskCompletionSource<List<int>> _hrTCS;
         private TaskCompletionSource<List<List<ActivityData>>> _activityTCS;
 
@@ -29,9 +31,9 @@ namespace Poz1.CDK.MiBand
 
         public event EventHandler DeviceDisconnected;
 
-        public event EventHandler<CharacteristicEventArgs> NormalNotificationReceived;
+		public event EventHandler<CharacteristicBase> NormalNotificationReceived;
 
-        public event EventHandler<CharacteristicEventArgs> GravitySensorNotificationReceived;
+        public event EventHandler<CharacteristicBase> GravitySensorNotificationReceived;
         public event EventHandler<RealTimeStepsEventArgs> RealTimeStepsNotificationReceived;
 
         #endregion
@@ -39,14 +41,15 @@ namespace Poz1.CDK.MiBand
         public Band(IDevice band)
         {
             _band = band;
-            _band.DeviceDisconnected += (object sender, EventArgs e) => DeviceDisconnected?.Invoke(null, null);
-            _band.CharacteristicChanged += OnBandCharacteristicChanged;
+            //_band += (object sender, EventArgs e) => DeviceDisconnected?.Invoke(null, null);
+            //_band.CharacteristicChanged += OnBandCharacteristicChanged;
         }
 
         #region Public Methods
         public async Task ConnectAsync()
         {
-            await _band.ConnectAsync();
+			await CrossBluetoothLE.Current.Adapter.ConnectToDeviceAsync(_band);
+            //await _band.ConnectAsync();
         }
 
         /// <summary>
@@ -55,12 +58,15 @@ namespace Poz1.CDK.MiBand
         /// <returns>True if pairing was Successful</returns>
         public async Task<bool> PairAsync()
         {
-            await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.Pair, MiBandCommand.Pair);
-            var ch = await _band.ReadCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.Pair);
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var pairChar = await mainService.GetCharacteristicAsync(MiBandCharacteristic.Pair);
+			await pairChar.WriteAsync(MiBandCommand.Pair);
 
-            Debug.WriteLine("pair result " + ch.Value.ToString());
+			var ch = await pairChar.ReadAsync();
 
-            if (ch.Value.Length == 1 && ch.Value[0] == 2)
+            Debug.WriteLine("pair result " + ch.ToString());
+
+			if (ch.Length == 1 && ch[0] == 2)
             {
                 return true;
             }
@@ -73,31 +79,39 @@ namespace Poz1.CDK.MiBand
 
         public async Task<DeviceInfo> GetDeviceInfoAsync()
         {
-            var ch = await _band.ReadCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.DeviceInfo);
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var deviceInfo = await mainService.GetCharacteristicAsync(MiBandCharacteristic.DeviceInfo);
 
-            if (ch.Value.Length == 16 || ch.Value.Length == 20)
+			var ch = await deviceInfo.ReadAsync();
+
+			if (ch.Length == 16 || ch.Length == 20)
             {
-                return new DeviceInfo(ch.Value);
+                return new DeviceInfo(ch);
             }
             else
             {
                 throw new Exception("GetDeviceInfoAsync result format wrong!");
             }
         }
+
         public async Task<int> GetRealTimeStepsAsync()
         {
-            var ch = await _band.ReadCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.RealtimeSteps);
-            return ch.Value[3] << 24 | (ch.Value[2] & 0xFF) << 16 | (ch.Value[1] & 0xFF) << 8 | (ch.Value[0] & 0xFF);
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var realtimeSteps = await mainService.GetCharacteristicAsync(MiBandCharacteristic.RealtimeSteps);
+
+			var ch = await realtimeSteps.ReadAsync();
+
+            return ch[3] << 24 | (ch[2] & 0xFF) << 16 | (ch[1] & 0xFF) << 8 | (ch[0] & 0xFF);
         }
 
         /// <summary>
         /// Always null
         /// </summary>
         /// <returns></returns>
-        public async Task GetSensorDataAsync()
-        {
-            var ch = await _band.ReadCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.SensorData);
-        }
+        //public async Task GetSensorDataAsync()
+        //{
+        //    //var ch = await _band.ReadCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.SensorData);
+        //}
         //public async Task<ActivityData> GetActivityDataAsync()
         //{
         //    await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, MiBandCommand.StartActivitySync);
@@ -108,13 +122,18 @@ namespace Poz1.CDK.MiBand
 
         public async Task<BatteryInfo> GetBatteryInfoAsync()
         {
-            var ch = await _band.ReadCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.Battery);
+            //var ch = await _band.ReadCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.Battery);
 
-            Debug.WriteLine("GetBatteryInfo result: " + ch.Value.ToString());
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var battery = await mainService.GetCharacteristicAsync(MiBandCharacteristic.Battery);
 
-            if (ch.Value.Length == 10)
+			var ch = await battery.ReadAsync();
+
+            Debug.WriteLine("GetBatteryInfo result: " + ch.ToString());
+
+            if (ch.Length == 10)
             {
-                return new BatteryInfo(ch.Value);
+                return new BatteryInfo(ch);
             }
             else
             {
@@ -125,45 +144,70 @@ namespace Poz1.CDK.MiBand
 
         public async Task<string> GetDeviceNameAsync()
         {
-            var ch = await _band.ReadCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.DeviceName);
-            return Encoding.UTF8.GetString(ch.Value, 0, ch.Value.Length);
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var deviceName = await mainService.GetCharacteristicAsync(MiBandCharacteristic.DeviceName);
+
+			var ch = await deviceName.ReadAsync();
+
+            return Encoding.UTF8.GetString(ch, 0, ch.Length);
         }
-        public async Task SetDeviceNameAsync(string deviceName)
+
+        public async Task SetDeviceNameAsync(string name)
         {
-            var data = Encoding.UTF8.GetBytes(deviceName);
-            await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.DeviceName, data);
+            var data = Encoding.UTF8.GetBytes(name);
+
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var deviceName = await mainService.GetCharacteristicAsync(MiBandCharacteristic.DeviceName);
+
+			var ch = await deviceName.WriteAsync(data);
         }
 
         public async Task<UserInfo> GetUserInfoAsync()
         {
-            var ch = await _band.ReadCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.UserInfo);
-            if (ch.Value.Length == 20)
+
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var userInfo = await mainService.GetCharacteristicAsync(MiBandCharacteristic.UserInfo);
+
+			var ch = await userInfo.ReadAsync();
+
+            if (ch.Length == 20)
             {
-                return new UserInfo(ch.Value);
+                return new UserInfo(ch);
             }
             else
             {
                 throw new Exception("GetUserInfoAsync result format is wrong!");
             }
         }
-        public async Task SetUserInfoAsync(UserInfo userInfo)
-        {
-            byte[] data = userInfo.ToByteArray(_band.MacAddress);
-            await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.UserInfo, data);
-        }
+
+   //     public async Task SetUserInfoAsync(UserInfo userInfo)
+   //     {
+   //         byte[] data = userInfo.ToByteArray(_band.MacAddress);
+
+			//var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			//var userInfo = await mainService.GetCharacteristicAsync(MiBandCharacteristic.UserInfo);
+
+			//var ch = await userInfo.WriteAsync(data);
+   //         await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.UserInfo, data);
+   //     }
 
         public async Task<DateTime> GetTimeAsync()
         {
-            var ch = await _band.ReadCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.DateTime);
-            if (ch.Value.Length == 12)
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var dateTime = await mainService.GetCharacteristicAsync(MiBandCharacteristic.DateTime);
+
+			var ch = await dateTime.ReadAsync();
+
+            if (ch.Length == 12)
             {
-                return new DateTime(ch.Value[0] + 2000, ch.Value[1], ch.Value[2], ch.Value[3], ch.Value[4], ch.Value[5]);
+                return new DateTime(ch[0] + 2000, ch[1], ch[2], ch[3], ch[4], ch[5]);
             }
             else
             {
                 throw new Exception("GetTimeAsync result format is wrong!");
             }
         }
+
         public async Task SetTimeAsync(DateTime time)
         {
             byte[] data = new byte[]
@@ -181,60 +225,78 @@ namespace Poz1.CDK.MiBand
                 (byte) 0x0f,
                 (byte) 0x0f};
 
-            await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.DateTime, data);
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var dateTime = await mainService.GetCharacteristicAsync(MiBandCharacteristic.DateTime);
+
+			await dateTime.WriteAsync(data);
         }
 
         public async Task<Statistics> GetStatisticsAsync()
         {
-            var ch = await _band.ReadCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.Statistics);
-            if (ch.Value.Length == 5)
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var statistics = await mainService.GetCharacteristicAsync(MiBandCharacteristic.Statistics);
+
+			var ch = await statistics.ReadAsync();
+
+            if (ch.Length == 5)
             {
-                return new Statistics(ch.Value);
+                return new Statistics(ch);
             }
             else
             {
                 throw new Exception("GetStatisticsAsync result format is wrong!");
             }
         }
-        public async Task SetStatisticsAsync(Statistics statistics)
+
+        public async Task SetStatisticsAsync(Statistics stats)
         {
-            byte[] data = statistics.ToByteArray();
-            await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.Statistics, data);
+			byte[] data = stats.ToByteArray();
+
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var statistics = await mainService.GetCharacteristicAsync(MiBandCharacteristic.Statistics);
+
+			await statistics.WriteAsync(data);
         }
 
         public async Task FactoryReset()
         {
-            await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, MiBandCommand.FactoryReset);
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var controlChar = await mainService.GetCharacteristicAsync(MiBandCharacteristic.ControlPoint);
+			await controlChar.WriteAsync(MiBandCommand.FactoryReset);
         }
 
         public async Task Reboot()
         {
-            await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, MiBandCommand.Reboot);
-        }
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var controlChar = await mainService.GetCharacteristicAsync(MiBandCharacteristic.ControlPoint);
+			await controlChar.WriteAsync(MiBandCommand.Reboot);        
+		}
 
         public async Task SetLedColorAsync(LedColor color)
         {
-            byte[] protocol;
+			byte[] data;
 
             switch (color)
             {
                 case LedColor.Red:
-                    protocol = MiBandCommand.SetColorLed;
+                    data = MiBandCommand.SetColorLed;
                     break;
                 case LedColor.Blue:
-                    protocol = MiBandCommand.SetColorBlue;
+                    data = MiBandCommand.SetColorBlue;
                     break;
                 case LedColor.Green:
-                    protocol = MiBandCommand.SetColorGreen;
+                    data = MiBandCommand.SetColorGreen;
                     break;
                 case LedColor.Orange:
-                    protocol = MiBandCommand.SetColorOrange;
+                    data = MiBandCommand.SetColorOrange;
                     break;
                 default:
                     return;
             }
 
-            await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, protocol);
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var controlChar = await mainService.GetCharacteristicAsync(MiBandCharacteristic.ControlPoint);
+			await controlChar.WriteAsync(data);
         }
       
         //public async Task SetLatencyAsync(Lantency latency)
@@ -269,14 +331,20 @@ namespace Poz1.CDK.MiBand
         public async Task SetFitnessGoalAsync(int fitnessGoal)
         {
             byte[] data = { MiBandCommand.SetFitnessGoal, 0, (byte)(fitnessGoal & 0xff), (byte)(((int)fitnessGoal >> 8) & 0xff) };
-            await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, data);
-        }
+
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var controlChar = await mainService.GetCharacteristicAsync(MiBandCharacteristic.ControlPoint);
+			await controlChar.WriteAsync(data);
+		}
 
         public async Task SetWearLocationAsync(WearLocation location)
         {
             byte[] data = { MiBandCommand.SetWearLocation[0], (byte)location };
-            await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, data);
-        }
+
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var controlChar = await mainService.GetCharacteristicAsync(MiBandCharacteristic.ControlPoint);
+			await controlChar.WriteAsync(data);
+		}
         //public async Task<WearLocation> GetWearLocation()
         //{
         //    var ch = await _band.ReadCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint);
@@ -293,9 +361,9 @@ namespace Poz1.CDK.MiBand
         public async Task GetUnkonw()
         {
 
-            var ch = await _band.SubscribeCharacteristic(MiBandService.MainService, MiBandCharacteristic.Unknown00, MiBandDescriptor.DescriptorUpdateNotification);
+            //var ch = await _band.SubscribeCharacteristic(MiBandService.MainService, MiBandCharacteristic.Unknown00, MiBandDescriptor.DescriptorUpdateNotification);
 
-            var ch2 = await _band.ReadCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.Unknown01);
+            //var ch2 = await _band.ReadCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.Unknown01);
         }
 
         #region ToBeImplemented
@@ -379,62 +447,100 @@ namespace Poz1.CDK.MiBand
         #region Vibration
         public async Task StartVibrationAsync(VibrationMode mode)
         {
-            byte[] protocol;
+			byte[] data;
 
             switch (mode)
             {
                 case VibrationMode.VibrationWithLed:
-                    protocol = MiBandCommand.VibrationWithLed;
+                    data = MiBandCommand.VibrationWithLed;
                     break;
                 case VibrationMode.Vibration10TimesWithLed:
-                    protocol = MiBandCommand.Vibration10TimesWithLed;
+                    data = MiBandCommand.Vibration10TimesWithLed;
                     break;
                 case VibrationMode.VibrationWithoutLed:
-                    protocol = MiBandCommand.VibrationWithoutLed;
+                    data = MiBandCommand.VibrationWithoutLed;
                     break;
                 default:
                     return;
             }
 
-            await _band.WriteCharacteristicAsync(MiBandService.ImmediateAlertService, MiBandCharacteristic.Vibration, protocol);
+			var mainService = await _band.GetServiceAsync(MiBandService.ImmediateAlertService);
+			var controlChar = await mainService.GetCharacteristicAsync(MiBandCharacteristic.Vibration);
+			await controlChar.WriteAsync(data);
         }
+
         public async Task StopVibrationAsync()
         {
-            await _band.WriteCharacteristicAsync(MiBandService.ImmediateAlertService, MiBandCharacteristic.Vibration, MiBandCommand.StopVibration);
+			var mainService = await _band.GetServiceAsync(MiBandService.ImmediateAlertService);
+			var controlChar = await mainService.GetCharacteristicAsync(MiBandCharacteristic.Vibration);
+			await controlChar.WriteAsync(MiBandCommand.StopVibration);
         }
         #endregion
 
         #region GravitySensor
         public async Task EnableGravitySensorNotifications()
         {
-            if (await _band.SubscribeCharacteristic(MiBandService.MainService, MiBandCharacteristic.SensorData, MiBandDescriptor.DescriptorUpdateNotification))
-            {
-                await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, MiBandCommand.EnableSensorDataNotifications);
-            }
+
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var sensorData = await mainService.GetCharacteristicAsync(MiBandCharacteristic.SensorData);
+			var updateNotification = await sensorData.GetDescriptorAsync(MiBandDescriptor.DescriptorUpdateNotification);
+
+			sensorData.ValueUpdated += (sender, e) => 
+			{
+				
+			};
+
+			await sensorData.StartUpdatesAsync();
+			await sensorData.WriteAsync(MiBandCommand.EnableSensorDataNotifications);
+
+
+            //if (await _band.SubscribeCharacteristic(MiBandService.MainService, MiBandCharacteristic.SensorData, MiBandDescriptor.DescriptorUpdateNotification))
+            //{
+            //    await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, MiBandCommand.EnableSensorDataNotifications);
+            //}
         }
 
-        public async Task DisableGravitySensorNotifications()
-        {
-            await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, MiBandCommand.DisableSensorDataNotifications);
-            await _band.UnsubscribeCharacteristic(MiBandService.MainService, MiBandCharacteristic.SensorData, MiBandDescriptor.DescriptorUpdateNotification);
-        }
+        //public async Task DisableGravitySensorNotifications()
+        //{
+        //    await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, MiBandCommand.DisableSensorDataNotifications);
+        //    await _band.UnsubscribeCharacteristic(MiBandService.MainService, MiBandCharacteristic.SensorData, MiBandDescriptor.DescriptorUpdateNotification);
+        //}
 
         #endregion
 
         #region RealTimeStepsSensor
         public async Task EnableRealtimeStepsNotifications()
         {
-            if (await _band.SubscribeCharacteristic(MiBandService.MainService, MiBandCharacteristic.RealtimeSteps, MiBandDescriptor.DescriptorUpdateNotification))
-            {
-                await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, MiBandCommand.EnableRealtimeStepsNotifications);
-            }
+
+			var mainService = await _band.GetServiceAsync(MiBandService.MainService);
+			var sensorData = await mainService.GetCharacteristicAsync(MiBandCharacteristic.RealtimeSteps);
+			//var updateNotification = await sensorData.GetDescriptorAsync(MiBandDescriptor.DescriptorUpdateNotification);
+
+			sensorData.ValueUpdated += (sender, e) =>
+			{
+				var data = e.Characteristic.Value;
+				if (data.Length == 4)
+				{
+					int steps = data[3] << 24 | (data[2] & 0xFF) << 16 | (data[1] & 0xFF) << 8 | (data[0] & 0xFF);
+					RealTimeStepsNotificationReceived?.Invoke(null, new RealTimeStepsEventArgs(steps));
+				}
+			};
+
+			await sensorData.StartUpdatesAsync();
+			await sensorData.WriteAsync(MiBandCommand.EnableRealtimeStepsNotifications);
+
+
+            //if (await _band.SubscribeCharacteristic(MiBandService.MainService, MiBandCharacteristic.RealtimeSteps, MiBandDescriptor.DescriptorUpdateNotification))
+            //{
+            //    await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, MiBandCommand.EnableRealtimeStepsNotifications);
+            //}
         }
 
-        public async Task DisableRealtimeStepsNotifications()
-        {
-            await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, MiBandCommand.DisableRealtimeStepsNotifications);
-            await _band.UnsubscribeCharacteristic(MiBandService.MainService, MiBandCharacteristic.RealtimeSteps, MiBandDescriptor.DescriptorUpdateNotification);
-        }
+        //public async Task DisableRealtimeStepsNotifications()
+        //{
+        //    await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, MiBandCommand.DisableRealtimeStepsNotifications);
+        //    await _band.UnsubscribeCharacteristic(MiBandService.MainService, MiBandCharacteristic.RealtimeSteps, MiBandDescriptor.DescriptorUpdateNotification);
+        //}
 
         #endregion
 
@@ -452,17 +558,53 @@ namespace Poz1.CDK.MiBand
             _hrTCS = new TaskCompletionSource<List<int>>();
             _hrReadings = new List<int>();
 
-            switch (mode)
+			switch (mode)
             {
                 case HeartRateMode.Spot:
                     {
                         _hrMode = HeartRateMode.Spot;
-                        Task.Run(async () =>
+						Task.Run(async () =>
                         {
-                            if (await _band.SubscribeCharacteristic(MiBandService.HeartRateService, MiBandCharacteristic.HeartRateMeasurement, MiBandDescriptor.DescriptorUpdateNotification))
-                            {
-                                await _band.WriteCharacteristicAsync(MiBandService.HeartRateService, MiBandCharacteristic.HeartRateControlPoint, MiBandCommand.StartHeartRateManual);
-                            }
+							try
+							{
+								//var updateNotification = await sensorData.GetDescriptorAsync(MiBandDescriptor.DescriptorUpdateNotification);
+								var mainService = await _band.GetServiceAsync(MiBandService.HeartRateService);
+								var sensorData = await mainService.GetCharacteristicAsync(MiBandCharacteristic.HeartRateMeasurement);
+								var control = await mainService.GetCharacteristicAsync(MiBandCharacteristic.HeartRateControlPoint);
+
+								sensorData.ValueUpdated += (sender, e) =>
+								{
+									var data = e.Characteristic.Value;
+									if (data.Length == 2 && data[0] == 6)
+									{
+										int heartRate = data[1] & 0xFF;
+
+										_hrReadings.Add(heartRate);
+
+										if (_hrMode == HeartRateMode.Spot)
+											_hrTCS.TrySetResult(_hrReadings);
+									}
+									else
+									{
+										_hrTCS.TrySetException(new Exception("HeartRate Data is Not Valid"));
+									}
+								};
+
+								var descriptor = await sensorData.GetDescriptorAsync(MiBandDescriptor.DescriptorUpdateNotification);
+
+								await descriptor.WriteAsync(MiBandCommand.EnableNotifications);
+
+								await sensorData.StartUpdatesAsync();
+								await control.WriteAsync(MiBandCommand.StartHeartRateManual);
+								//if (await _band.SubscribeCharacteristic(MiBandService.HeartRateService, MiBandCharacteristic.HeartRateMeasurement, MiBandDescriptor.DescriptorUpdateNotification))
+								//{
+								//    await _band.WriteCharacteristicAsync(MiBandService.HeartRateService, MiBandCharacteristic.HeartRateControlPoint, MiBandCommand.StartHeartRateManual);
+								//}
+							}
+							catch (Exception e) 
+							{
+								throw;
+							}
                         });
 
                         return _hrTCS.Task;
@@ -472,10 +614,39 @@ namespace Poz1.CDK.MiBand
                         _hrMode = HeartRateMode.Countinous;
                         Task.Run(async () =>
                         {
-                            if (!_hrNotificationSubscribed)
-                                _hrNotificationSubscribed = await _band.SubscribeCharacteristic(MiBandService.HeartRateService, MiBandCharacteristic.HeartRateMeasurement, MiBandDescriptor.DescriptorUpdateNotification);
+							var mainService = await _band.GetServiceAsync(MiBandService.HeartRateService);
+							var sensorData = await mainService.GetCharacteristicAsync(MiBandCharacteristic.HeartRateMeasurement);
 
-                            await _band.WriteCharacteristicAsync(MiBandService.HeartRateService, MiBandCharacteristic.HeartRateControlPoint, MiBandCommand.StartHeartRateContinuous);
+							if (!_hrNotificationSubscribed)
+							{
+								await sensorData.StartUpdatesAsync();
+								_hrNotificationSubscribed = true;
+							}
+							//var updateNotification = await sensorData.GetDescriptorAsync(MiBandDescriptor.DescriptorUpdateNotification);
+							
+							sensorData.ValueUpdated += (sender, e) =>
+							{
+								var data = e.Characteristic.Value;
+								if (data.Length == 2 && data[0] == 6)
+								{
+									int heartRate = data[1] & 0xFF;
+
+									_hrReadings.Add(heartRate);
+
+									if (_hrMode == HeartRateMode.Spot)
+										_hrTCS.TrySetResult(_hrReadings);
+								}
+								else
+								{
+									_hrTCS.TrySetException(new Exception("HeartRate Data is Not Valid"));
+								}
+							};
+
+							await sensorData.StartUpdatesAsync();
+							await sensorData.WriteAsync(MiBandCommand.StartHeartRateContinuous);
+
+                            //    _hrNotificationSubscribed = await _band.SubscribeCharacteristic(MiBandService.HeartRateService, MiBandCharacteristic.HeartRateMeasurement, MiBandDescriptor.DescriptorUpdateNotification);
+                            //await _band.WriteCharacteristicAsync(MiBandService.HeartRateService, MiBandCharacteristic.HeartRateControlPoint, MiBandCommand.StartHeartRateContinuous);
 
                             await Task.Delay(20000);
                             _hrTCS.SetResult(_hrReadings);
@@ -507,10 +678,10 @@ namespace Poz1.CDK.MiBand
 
             Task.Run(async () =>
             {
-                if (await _band.SubscribeCharacteristic(MiBandService.MainService, MiBandCharacteristic.ActivityData, MiBandDescriptor.DescriptorUpdateNotification))
-                {
-                    await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, MiBandCommand.StartActivitySync);
-                }
+                //if (await _band.SubscribeCharacteristic(MiBandService.MainService, MiBandCharacteristic.ActivityData, MiBandDescriptor.DescriptorUpdateNotification))
+                //{
+                //    await _band.WriteCharacteristicAsync(MiBandService.MainService, MiBandCharacteristic.ControlPoint, MiBandCommand.StartActivitySync);
+                //}
             });
 
             return _activityTCS.Task;
@@ -553,6 +724,7 @@ namespace Poz1.CDK.MiBand
             }
             return 1;
         }
+
         private void ParseActivityList(List<byte> list, DateTime timeStamp)
         {
             var activitiesList = new List<ActivityData>();
@@ -574,65 +746,65 @@ namespace Poz1.CDK.MiBand
 
         public async Task EnableNotificationsAsync()
         {
-            await _band.SubscribeCharacteristic(MiBandService.MainService, MiBandCharacteristic.GeneralNotification, MiBandDescriptor.DescriptorUpdateNotification);
+            //await _band.SubscribeCharacteristic(MiBandService.MainService, MiBandCharacteristic.GeneralNotification, MiBandDescriptor.DescriptorUpdateNotification);
         }
         #endregion
-        private void OnBandCharacteristicChanged(object sender, CharacteristicEventArgs e)
-        {
-            switch (e.Characteristic.Guid.ToString())
-            {
-                case MiBandCharacteristic.GeneralNotification:
-                    {
-                        NormalNotificationReceived?.Invoke(null, new CharacteristicEventArgs(e.Characteristic));
-                        break;
-                    }
-                case MiBandCharacteristic.SensorData:
-                    {
-                        GravitySensorNotificationReceived?.Invoke(null, new CharacteristicEventArgs(e.Characteristic));
-                        break;
-                    }
-                case MiBandCharacteristic.RealtimeSteps:
-                    {
-                        var data = e.Characteristic.Value;
-                        if (data.Length == 4)
-                        {
-                            int steps = data[3] << 24 | (data[2] & 0xFF) << 16 | (data[1] & 0xFF) << 8 | (data[0] & 0xFF);
-                            RealTimeStepsNotificationReceived?.Invoke(null, new RealTimeStepsEventArgs(steps));
-                        }
+        //private void OnBandCharacteristicChanged(object sender, CharacteristicEventArgs e)
+        //{
+        //    switch (e.Characteristic.Guid.ToString())
+        //    {
+        //        case MiBandCharacteristic.GeneralNotification:
+        //            {
+        //                NormalNotificationReceived?.Invoke(null, new CharacteristicEventArgs(e.Characteristic));
+        //                break;
+        //            }
+        //        case MiBandCharacteristic.SensorData:
+        //            {
+        //                GravitySensorNotificationReceived?.Invoke(null, new CharacteristicEventArgs(e.Characteristic));
+        //                break;
+        //            }
+        //        case MiBandCharacteristic.RealtimeSteps:
+        //            {
+        //                var data = e.Characteristic.Value;
+        //                if (data.Length == 4)
+        //                {
+        //                    int steps = data[3] << 24 | (data[2] & 0xFF) << 16 | (data[1] & 0xFF) << 8 | (data[0] & 0xFF);
+        //                    RealTimeStepsNotificationReceived?.Invoke(null, new RealTimeStepsEventArgs(steps));
+        //                }
 
-                        break;
-                    }
-                case MiBandCharacteristic.HeartRateMeasurement:
-                    {
-                        var data = e.Characteristic.Value;
-                        if (data.Length == 2 && data[0] == 6)
-                        {
-                            int heartRate = data[1] & 0xFF;
+        //                break;
+        //            }
+        //        case MiBandCharacteristic.HeartRateMeasurement:
+        //            {
+        //                var data = e.Characteristic.Value;
+        //                if (data.Length == 2 && data[0] == 6)
+        //                {
+        //                    int heartRate = data[1] & 0xFF;
 
-                            _hrReadings.Add(heartRate);
+        //                    _hrReadings.Add(heartRate);
 
-                            if (_hrMode == HeartRateMode.Spot)
-                                _hrTCS.TrySetResult(_hrReadings);
-                        }
-                        else
-                        {
-                            _hrTCS.TrySetException(new Exception("HeartRate Data is Not Valid"));
-                        }
-                        break;
-                    }
-                case MiBandCharacteristic.ActivityData:
-                    {
-                        var data = e.Characteristic.Value;
-                        var result = OrganizeActivityData(data);
-                        break;
-                    }
-                default:
-                    {
-                        Debug.WriteLine("Unkown Characteristic");
-                        break;
-                    }
-            }
-        }
+        //                    if (_hrMode == HeartRateMode.Spot)
+        //                        _hrTCS.TrySetResult(_hrReadings);
+        //                }
+        //                else
+        //                {
+        //                    _hrTCS.TrySetException(new Exception("HeartRate Data is Not Valid"));
+        //                }
+        //                break;
+        //            }
+        //        case MiBandCharacteristic.ActivityData:
+        //            {
+        //                var data = e.Characteristic.Value;
+        //                var result = OrganizeActivityData(data);
+        //                break;
+        //            }
+        //        default:
+        //            {
+        //                Debug.WriteLine("Unkown Characteristic");
+        //                break;
+        //            }
+        //    }
+        //}
 
         public async Task TestAPI()
         {

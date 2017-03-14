@@ -1,4 +1,6 @@
-﻿namespace Poz1.CDK.MiBand
+﻿using System;
+
+namespace Poz1.CDK.MiBand
 {
     public struct MiBandMacAddressFilter
     {
@@ -11,61 +13,61 @@
         public const string MI_1A = "MI1A";
         public const string MI_1S = "MI1S";
     }
-    public struct MiBandService
-    {
-        public const string GenericAccessService = "00001800-0000-1000-8000-00805f9b34fb";
-        public const string GenericAttributeService = "00001801-0000-1000-8000-00805f9b34fb";
-        public const string MainService = "0000fee0-0000-1000-8000-00805f9b34fb";
-        public const string ServiceUnknown = "0000fee1-0000-1000-8000-00805f9b34fb";
-        public const string HeartRateService = "0000180d-0000-1000-8000-00805f9b34fb";
-        public const string ImmediateAlertService = "00001802-0000-1000-8000-00805f9b34fb";
-    }
+	public static class MiBandService
+	{
+		public static Guid GenericAccessService = new Guid("00001800-0000-1000-8000-00805f9b34fb");
+		public static Guid GenericAttributeService = new Guid("00001801-0000-1000-8000-00805f9b34fb");
+		public static Guid MainService = new Guid("0000fee0-0000-1000-8000-00805f9b34fb");
+		public static Guid ServiceUnknown = new Guid("0000fee1-0000-1000-8000-00805f9b34fb");
+		public static Guid HeartRateService = new Guid("0000180d-0000-1000-8000-00805f9b34fb");
+		public static Guid ImmediateAlertService = new Guid("00001802-0000-1000-8000-00805f9b34fb");
+	}
 
-    public struct MiBandCharacteristic
-    {
-        #region GenericAccessService
-        public const string GenericDeviceName = "00002A00-0000-1000-8000-00805f9b34fb";
-        public const string Appereance = "00002A01-0000-1000-8000-00805f9b34fb";
-        public const string ReconnectionAddress = "00002A02-0000-1000-8000-00805f9b34fb";
-        public const string PeripheralPreferredConnectionParameters = "00002A04-0000-1000-8000-00805f9b34fb";
-        #endregion
-        #region GenericAttributeService
-        public const string ServiceChanged = "00002A05-0000-1000-8000-00805f9b34fb";
-        #endregion
-        #region MainService
-        public const string DeviceInfo = "0000ff01-0000-1000-8000-00805f9b34fb";
-        public const string DeviceName = "0000ff02-0000-1000-8000-00805f9b34fb";
-        public const string GeneralNotification = "0000ff03-0000-1000-8000-00805f9b34fb";
-        public const string UserInfo = "0000ff04-0000-1000-8000-00805f9b34fb";
-        public const string ControlPoint = "0000ff05-0000-1000-8000-00805f9b34fb";
-        public const string RealtimeSteps = "0000ff06-0000-1000-8000-00805f9b34fb";
-        public const string ActivityData = "0000ff07-0000-1000-8000-00805f9b34fb";
-        public const string FirmwareData = "0000ff08-0000-1000-8000-00805f9b34fb";
-        public const string LeParams = "0000ff09-0000-1000-8000-00805f9b34fb";
-        public const string DateTime = "0000ff0a-0000-1000-8000-00805f9b34fb";
-        public const string Statistics = "0000ff0b-0000-1000-8000-00805f9b34fb";
-        public const string Battery = "0000ff0c-0000-1000-8000-00805f9b34fb";
-        public const string Test = "0000ff0d-0000-1000-8000-00805f9b34fb";
-        public const string SensorData = "0000ff0e-0000-1000-8000-00805f9b34fb";
-        public const string Pair = "0000ff0f-0000-1000-8000-00805f9b34fb";
-        public const string Unknown00 = "0000ff10-0000-1000-8000-00805f9b34fb";
-        public const string Unknown01 = "0000fec9-0000-1000-8000-00805f9b34fb";
-        #endregion
-        #region ServiceUnknown
-        #endregion
-        #region ImmediateAlertService
-        public const string Vibration = "00002a06-0000-1000-8000-00805f9b34fb";
-        #endregion
-        #region HeartRateService
-        public const string HeartRateControlPoint = "00002a39-0000-1000-8000-00805f9b34fb";
-        public const string HeartRateMeasurement = "00002a37-0000-1000-8000-00805f9b34fb";
-        #endregion
-    }
+	public class MiBandCharacteristic
+	{
+		#region GenericAccessService
+		public static Guid GenericDeviceName = new Guid("00002A00-0000-1000-8000-00805f9b34fb");
+		public static Guid Appereance = new Guid("00002A01-0000-1000-8000-00805f9b34fb");
+		public static Guid ReconnectionAddress = new Guid("00002A02-0000-1000-8000-00805f9b34fb");
+		public static Guid PeripheralPreferredConnectionParameters = new Guid("00002A04-0000-1000-8000-00805f9b34fb");
+		#endregion
+		#region GenericAttributeService
+		public static Guid ServiceChanged = new Guid("00002A05-0000-1000-8000-00805f9b34fb");
+		#endregion
+		#region MainService
+		public static Guid DeviceInfo = new Guid("0000ff01-0000-1000-8000-00805f9b34fb");
+		public static Guid DeviceName = new Guid("0000ff02-0000-1000-8000-00805f9b34fb");
+		public static Guid GeneralNotification = new Guid("0000ff03-0000-1000-8000-00805f9b34fb");
+		public static Guid UserInfo = new Guid("0000ff04-0000-1000-8000-00805f9b34fb");
+		public static Guid ControlPoint = new Guid("0000ff05-0000-1000-8000-00805f9b34fb");
+		public static Guid RealtimeSteps = new Guid("0000ff06-0000-1000-8000-00805f9b34fb");
+		public static Guid ActivityData = new Guid("0000ff07-0000-1000-8000-00805f9b34fb");
+		public static Guid FirmwareData = new Guid("0000ff08-0000-1000-8000-00805f9b34fb");
+		public static Guid LeParams = new Guid("0000ff09-0000-1000-8000-00805f9b34fb");
+		public static Guid DateTime = new Guid("0000ff0a-0000-1000-8000-00805f9b34fb");
+		public static Guid Statistics = new Guid("0000ff0b-0000-1000-8000-00805f9b34fb");
+		public static Guid Battery = new Guid("0000ff0c-0000-1000-8000-00805f9b34fb");
+		public static Guid Test = new Guid("0000ff0d-0000-1000-8000-00805f9b34fb");
+		public static Guid SensorData = new Guid("0000ff0e-0000-1000-8000-00805f9b34fb");
+		public static Guid Pair = new Guid("0000ff0f-0000-1000-8000-00805f9b34fb");
+		public static Guid Unknown00 = new Guid("0000ff10-0000-1000-8000-00805f9b34fb");
+		public static Guid Unknown01 = new Guid("0000fec9-0000-1000-8000-00805f9b34fb");
+		#endregion
+		#region ServiceUnknown
+		#endregion
+		#region ImmediateAlertService
+		public static Guid Vibration = new Guid("00002a06-0000-1000-8000-00805f9b34fb");
+		#endregion
+		#region HeartRateService
+		public static Guid HeartRateControlPoint = new Guid("00002a39-0000-1000-8000-00805f9b34fb");
+		public static Guid HeartRateMeasurement = new Guid("00002a37-0000-1000-8000-00805f9b34fb");
+		#endregion
+	}
 
-    public struct MiBandDescriptor
-    {
-        public const string DescriptorUpdateNotification = "00002902-0000-1000-8000-00805f9b34fb";
-    }
+	public static class MiBandDescriptor
+	{
+		public static Guid DescriptorUpdateNotification = new Guid("00002902-0000-1000-8000-00805f9b34fb");
+	}
 
     public struct MiBandCommand
     {
@@ -108,6 +110,9 @@
         public static byte[] SelfTest = { 2 };
         
        
+
+		        public static byte[] EnableNotifications = { 0x01, 0x00 };
+
         /* COMMANDS: usually sent to UUID_CHARACTERISTIC_CONTROL_POINT characteristic */
 
         public static   byte SetTimer = 0x4;
