@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Poz1.CDK.MiBand
+namespace Poz1.MiBandCDK.Model
 {
 
     //Byte[0-3] --> device ID
@@ -17,44 +17,25 @@ namespace Poz1.CDK.MiBand
     {
         #region Properties
 
-        private int _feature;
-        public int Feature { get { return _feature; } }
-
-        private int _appearance;
-        public int Appearance { get { return _appearance; } }
-
-        private string _deviceId;
-        public string DeviceId { get { return _deviceId; } }
-
-        private int _profileVersion;
-        public int ProfileVersion { get { return _profileVersion; } }
-        
-        private int _firmwareVersion;
-        public int FirmwareVersion { get { return _firmwareVersion; } }
-
-        private int _hwVersion;
-        public int HWVersion { get { return _hwVersion; } }
-
-        private int _heartRateFirmwareVersion;
-        public int HeartRateFirmwareVersion
-        {
-            get
-            {
-                return _heartRateFirmwareVersion;
-            }
-        }
+		public int Feature { get; }
+        public int Appearance { get; }
+        public string DeviceId { get;}
+        public int ProfileVersion { get; }
+        public int FirmwareVersion { get; }
+        public int HWVersion { get; }
+		public int HeartRateFirmwareVersion { get;}
 
         public MiBandModel Model
         {
             get
             {
-                if (_hwVersion == 2)
+				if (HWVersion == 2)
                     return MiBandModel.MI1;
 
-                if (_feature == 5 && _appearance == 0 || _feature == 0 && _hwVersion == 208)
+				if (Feature == 5 && Appearance == 0 || Feature == 0 && HWVersion == 208)
                     return MiBandModel.MI1A;
 
-                if (_feature == 4 && _appearance == 0 || _feature == 4 && _hwVersion == 4)
+				if (Feature == 4 && Appearance == 0 || Feature == 4 && HWVersion == 4)
                     return MiBandModel.MI1S;
 
                 throw new InvalidOperationException("Model not Recognized");
@@ -66,12 +47,12 @@ namespace Poz1.CDK.MiBand
         {
             if ((data.Length == 16 || data.Length == 20) && CheckChecksum(data))
             {
-                _deviceId = string.Format("{0:X2}:{1:X2}:{2:X2}:{3:X2}:{4:X2}:{5:X2}:{6:X2}:{7:X2}", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
-                _profileVersion = BitConverter.ToInt32(data, 8);
-                _firmwareVersion = BitConverter.ToInt32(data, 12);
-                _hwVersion = data[6] & 255;
-                _appearance = data[5] & 255;
-                _feature = data[4] & 255;
+                DeviceId = string.Format("{0:X2}:{1:X2}:{2:X2}:{3:X2}:{4:X2}:{5:X2}:{6:X2}:{7:X2}", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
+				ProfileVersion = BitConverter.ToInt32(data, 8);
+				FirmwareVersion = BitConverter.ToInt32(data, 12);
+				HWVersion = data[6] & 255;
+				Appearance = data[5] & 255;
+				Feature = data[4] & 255;
 
                 if (data.Length == 20)
                 {
@@ -81,7 +62,7 @@ namespace Poz1.CDK.MiBand
                         s |= (data[16 + i] & 255) << i * 8;
                     }
 
-                    _heartRateFirmwareVersion = s;
+					HeartRateFirmwareVersion = s;
                 }
             }
             else
@@ -90,22 +71,22 @@ namespace Poz1.CDK.MiBand
             }
         }
 
-        private bool CheckChecksum(byte[] data)
+        bool CheckChecksum(byte[] data)
         {
-            int crc8 = GetCRC8(new byte[] { data[0], data[1], data[2], data[3], data[4], data[5], data[6] });
+            var crc8 = GetCRC8(new byte[] { data[0], data[1], data[2], data[3], data[4], data[5], data[6] });
             return (data[7] & 255) == (crc8 ^ data[3] & 255);
         }
 
         public override string ToString()
         {
             return "DeviceInfo{" +
-                    "deviceId='" + DeviceId + '\'' +
-                    ", profileVersion=" + ProfileVersion +
-                    ", fwVersion=" + _firmwareVersion +
-                    ", hwVersion=" + _hwVersion +
-                    ", feature=" + _feature +
-                    ", appearance=" + _appearance +
-                    ", fw2Version (hr)=" + _heartRateFirmwareVersion +
+                    "DeviceId='" + DeviceId + '\'' +
+                    ", ProfileVersion=" + ProfileVersion +
+                    ", FWVersion=" + FirmwareVersion +
+                    ", HWVersion=" + HWVersion +
+                    ", Feature=" + Feature +
+                    ", Appearance=" + Appearance +
+                    ", FW2Version (hr)=" + HeartRateFirmwareVersion +
                     '}';
         }
     }

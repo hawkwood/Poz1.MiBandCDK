@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Poz1.CDK.MiBand
+namespace Poz1.MiBandCDK
 {
     public struct MiBandMacAddressFilter
     {
@@ -84,7 +84,7 @@ namespace Poz1.CDK.MiBand
         public static byte[] EnableSensorDataNotifications = { 18, 1 };
         public static byte[] DisableSensorDataNotifications = { 18, 0 };
 
-        public static byte[] StartActivitySync = { 6 };
+        public static byte[] StartActivitySync = { 06 };
         public static byte[] StopActivitySync = { 10 };
 
         public static byte[] SetColorLed = { 14, 6, 1, 2, 1 };

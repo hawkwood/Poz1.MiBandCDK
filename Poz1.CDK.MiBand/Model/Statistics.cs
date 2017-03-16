@@ -1,55 +1,46 @@
 ﻿using System.Text;
 
-namespace Poz1.CDK.MiBand
+namespace Poz1.MiBandCDK.Model
 {
     public class Statistics
     {
         #region Properties
 
-        private int _wake;
-        public int Wake { get { return _wake; } }
-
-        private int _vibrate;
-        public int Vibrate { get { return _vibrate; } }
-
-        private int _light;
-        public int Light { get { return _light; } }
-
-        private int _conn;
-        public int Conn { get { return _conn; } }
-
-        private int _adv;
-        public int Adv { get { return _adv; } }
+		public int Wake { get; }
+		public int Vibrate { get; }
+		public int Light { get; }
+		public int Conn { get; }
+		public int Adv { get; }
 
         #endregion
 
         public Statistics(byte[] data)
         {
-            _wake = data[0];
-            _vibrate = data[1];
-            _light = data[2];
-            _conn = data[3];
-            _adv = data[4];
+			Wake = data[0];
+			Vibrate = data[1];
+			Light = data[2];
+			Conn = data[3];
+			Adv = data[4];
         }
 
         public Statistics(int wake, int vibrate, int light, int conn, int adv)
         {
-            _wake = wake;
-            _vibrate = vibrate;
-            _light = light;
-            _conn = conn;
-            _adv = adv;
+			Wake = wake;
+			Vibrate = vibrate;
+			Light = light;
+			Conn = conn;
+			Adv = adv;
         }
 
         public byte[] ToByteArray()
         {
             var _data = new byte[5];
 
-            _data[0] = (byte)_wake;
-            _data[1] = (byte)_vibrate;
-            _data[2] = (byte)_light;
-            _data[3] = (byte)_conn;
-            _data[4] = (byte)_adv;
+			_data[0] = (byte)Wake;
+			_data[1] = (byte)Vibrate;
+			_data[2] = (byte)Light;
+			_data[3] = (byte)Conn;
+			_data[4] = (byte)Adv;
 
             return _data;
         }

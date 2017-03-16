@@ -1,36 +1,27 @@
 ﻿using System;
 
-namespace Poz1.CDK.MiBand
+namespace Poz1.MiBandCDK.Model
 {
     public class ActivityData
     {
-        private MiBandActivity _category;
-        public MiBandActivity Category { get { return _category; } }
-
-        private int _intensity;
-        public int Intensity { get { return _intensity; } }
-
-        private int _steps;
-        public int Steps { get { return _steps; } }
-
-        private int _heartRate;
-        public int HeartRate { get { return _heartRate; } }
-
-        private DateTime _startTime;
-        public DateTime StartTime { get { return _startTime; } }
+        public MiBandActivity Category { get; }
+        public int Intensity { get; }
+        public int Steps { get;  }
+        public int HeartRate { get ; }
+		public DateTime StartTime { get ; }
 
         public ActivityData(byte[] data, DateTime startTime)
         {
-            _category = (MiBandActivity)data[0];
-            _intensity = data[1];
-            _steps = data[2];
-            _heartRate = data[3];
-            _startTime = startTime;
+            Category = (MiBandActivity)data[0];
+            Intensity = data[1];
+            Steps = data[2];
+            HeartRate = data[3];
+            StartTime = startTime;
         }
 
         public override string ToString()
         {
-            return "ActivityData [intensity=" + _intensity + ", steps=" + _steps + ", category=" + _category + "]";
+			return "ActivityData [Intensity=" + Intensity + ", Steps=" + Steps + ", Category=" + Category + "]";
         }
     }
 }

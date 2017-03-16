@@ -1,4 +1,4 @@
-﻿namespace Poz1.CDK.MiBand
+﻿namespace Poz1.MiBandCDK.Model
 {
     public enum MiBandModel
     {

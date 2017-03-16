@@ -1,37 +1,29 @@
 ﻿using System;
 using System.Text;
 
-namespace Poz1.CDK.MiBand
+namespace Poz1.MiBandCDK.Model
 {
     public class LEParameter
     {
         #region Properties
 
-        private int _minConnectionInterval;
-        public int MinConnectionInterval { get { return _minConnectionInterval; } }
-
-        private int _maxConnectionInterval;
-        public int MaxConnectionInterval { get { return _maxConnectionInterval; } }
-
-        private int _latency;
-        public int Latency { get { return _latency; } }
-
-        private int _timeout;
-        public int Timeout { get { return _timeout; } }
-
-        private int _advertisementInterval;
-        public int AdvertisementInterval { get { return _advertisementInterval; } }
+		public int MinConnectionInterval { get;}
+		public int MaxConnectionInterval { get; }
+		public int Latency { get; }
+		public int Timeout { get; }
+		public int AdvertisementInterval { get; }
 
         #endregion
 
         public LEParameter(int minConnectionInterval, int maxConnectionInterval, int latency, int timeout, int advertisementInterval)
         {
-            _minConnectionInterval = minConnectionInterval;
-            _maxConnectionInterval = maxConnectionInterval;
-            _latency = latency;
-            _timeout = timeout;
-            _advertisementInterval = advertisementInterval;
+            MinConnectionInterval = minConnectionInterval;
+            MaxConnectionInterval = maxConnectionInterval;
+            Latency = latency;
+			Timeout = timeout;
+			AdvertisementInterval = advertisementInterval;
         }
+
         public LEParameter(byte[] data)
         {
             if (data.Length < 12)
@@ -39,28 +31,28 @@ namespace Poz1.CDK.MiBand
                 throw new InvalidOperationException("Data is not valid for LEParameter");
             }
 
-            _minConnectionInterval = (0xFF & data[1]) << 8 | (data[0] & 0xFF);
-            _maxConnectionInterval = (0xFF & data[3]) << 8 | (data[2] & 0xFF);
-            _latency = (0xFF & data[5]) << 8 | (data[6] & 0xFF);
-            _timeout = (0xFF & data[7]) << 8 | (data[8] & 0xFF);
-            _advertisementInterval = (0xFF & data[11]) << 8 | (data[10] & 0xFF);
+			MinConnectionInterval = (0xFF & data[1]) << 8 | (data[0] & 0xFF);
+			MaxConnectionInterval = (0xFF & data[3]) << 8 | (data[2] & 0xFF);
+			Latency = (0xFF & data[5]) << 8 | (data[6] & 0xFF);
+			Timeout = (0xFF & data[7]) << 8 | (data[8] & 0xFF);
+			AdvertisementInterval = (0xFF & data[11]) << 8 | (data[10] & 0xFF);
         }
 
         public byte[] ToByteArray()
         {
             byte[] _data = new byte[12];
-            _data[0] = (byte)(_minConnectionInterval & 0xff);
-            _data[1] = (byte)(0xff & _minConnectionInterval >> 8);
-            _data[2] = (byte)(_maxConnectionInterval & 0xff);
-            _data[3] = (byte)(0xff & _maxConnectionInterval >> 8);
-            _data[4] = (byte)(_latency & 0xff);
-            _data[5] = (byte)(0xff & _latency >> 8);
-            _data[6] = (byte)(_timeout & 0xff);
-            _data[7] = (byte)(0xff & _timeout >> 8);
+			_data[0] = (byte)(MinConnectionInterval & 0xff);
+			_data[1] = (byte)(0xff & MinConnectionInterval >> 8);
+			_data[2] = (byte)(MaxConnectionInterval & 0xff);
+			_data[3] = (byte)(0xff & MaxConnectionInterval >> 8);
+			_data[4] = (byte)(Latency & 0xff);
+			_data[5] = (byte)(0xff & Latency >> 8);
+			_data[6] = (byte)(Timeout & 0xff);
+			_data[7] = (byte)(0xff & Timeout >> 8);
             _data[8] = 0;
             _data[9] = 0;
-            _data[10] = (byte)(_advertisementInterval & 0xff);
-            _data[11] = (byte)(0xff & _advertisementInterval >> 8);
+			_data[10] = (byte)(AdvertisementInterval & 0xff);
+			_data[11] = (byte)(0xff & AdvertisementInterval >> 8);
 
             return _data;
         }

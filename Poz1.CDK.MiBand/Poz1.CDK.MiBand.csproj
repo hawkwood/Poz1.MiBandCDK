@@ -42,18 +42,18 @@
     <Compile Include="Model\LEParameter.cs" />
     <Compile Include="MiBand.cs" />
     <Compile Include="MiBandConstants.cs" />
-    <Compile Include="MiBandEnums.cs" />
     <Compile Include="MiBandEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\Statistics.cs" />
     <Compile Include="Model\UserInfo.cs" />
+    <Compile Include="Model\MiBandEnums.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Plugin.BLE.Abstractions">
-      <HintPath>..\packages\Plugin.BLE.1.2.1\lib\portable-net45+win8+wpa81+wp8\Plugin.BLE.Abstractions.dll</HintPath>
+      <HintPath>..\packages\Plugin.BLE.1.3.0-alpha1\lib\portable-net45+win8+wpa81+wp8\Plugin.BLE.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Plugin.BLE">
-      <HintPath>..\packages\Plugin.BLE.1.2.1\lib\portable-net45+win8+wpa81+wp8\Plugin.BLE.dll</HintPath>
+      <HintPath>..\packages\Plugin.BLE.1.3.0-alpha1\lib\portable-net45+win8+wpa81+wp8\Plugin.BLE.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

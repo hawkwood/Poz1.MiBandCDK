@@ -3,45 +3,33 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace Poz1.CDK.MiBand
+namespace Poz1.MiBandCDK.Model
 {
     public class UserInfo : BaseInfo
     {
         #region Properties 
 
-        private int _id;
-        public int ID { get { return _id; } }
-
-        private byte _gender;
-        public Gender Gender { get { return (Gender)_gender; } }
-
-        private byte _age;
-        public int Age { get { return _age; } }
-
-        private byte _height; // cm
-        public int Height { get { return _height; } }
-
-        private byte _weight; // kg
-        public int Weight { get { return _weight; } }
-        
-        private string _alias = "";
-        public string Alias { get { return _alias; } }
-
-        private byte _type;
-        public int Type { get { return _type; } }
+		public int ID { get; }
+		public Gender Gender { get; }
+		public int Age { get; }
+		public int Height { get; } //cm
+		public int Weight { get; } //kg
+		public string Alias { get; }
+		public int Type { get; }
 
         #endregion
 
         public UserInfo(int uid, int gender, int age, int height, int weight, string alias, int type)
         {
-            _id = uid;
-            _gender = (byte)gender;
-            _age = (byte)age;
-            _height = (byte)(height & 0xFF);
-            _weight = (byte)weight;
-            _alias = alias;
-            _type = (byte)type;
+			ID = uid;
+			Gender = (Gender)gender;
+            Age = (byte)age;
+            Height = (byte)(height & 0xFF);
+            Weight = (byte)weight;
+            Alias = alias;
+            Type = (byte)type;
         }
+
         public UserInfo(byte[] data)
         {
             if (data.Length < 20)
@@ -49,14 +37,14 @@ namespace Poz1.CDK.MiBand
                 throw new InvalidDataException();
             }
 
-            _id = data[3] << 24 | (data[2] & 0xFF) << 16 | (data[1] & 0xFF) << 8 | (data[0] & 0xFF);
-            _alias = "";
+            ID = data[3] << 24 | (data[2] & 0xFF) << 16 | (data[1] & 0xFF) << 8 | (data[0] & 0xFF);
+			Alias = "";
 
-            _gender = data[4];
-            _age = data[5];
-            _height = data[6];
-            _weight = data[7];
-            _type = data[8];
+			Gender = (Gender)data[4];
+			Age = data[5];
+			Height = data[6];
+			Weight = data[7];
+			Type = data[8];
         }
 
         public byte[] ToByteArray(string btAddress)
@@ -64,7 +52,7 @@ namespace Poz1.CDK.MiBand
             byte[] aliasBytes;
             try
             {
-                aliasBytes = Encoding.UTF8.GetBytes(_alias);
+				aliasBytes = Encoding.UTF8.GetBytes(Alias);
             }
             catch (Exception e)
             {
@@ -74,15 +62,15 @@ namespace Poz1.CDK.MiBand
 
             var stream = new MemoryStream(20);
 
-            stream.WriteByte((byte)(_id & 0xff));
-            stream.WriteByte((byte)(_id >> 8 & 0xff));
-            stream.WriteByte((byte)(_id >> 16 & 0xff));
-            stream.WriteByte((byte)(_id >> 24 & 0xff));
-            stream.WriteByte(_gender);
-            stream.WriteByte(_age);
-            stream.WriteByte(_height);
-            stream.WriteByte(_weight);
-            stream.WriteByte(_type);
+			stream.WriteByte((byte)(ID & 0xff));
+            stream.WriteByte((byte)(ID >> 8 & 0xff));
+            stream.WriteByte((byte)(ID >> 16 & 0xff));
+            stream.WriteByte((byte)(ID >> 24 & 0xff));
+			stream.WriteByte((byte)Gender);
+			stream.WriteByte((byte)Age);
+			stream.WriteByte((byte)Height);
+			stream.WriteByte((byte)Weight);
+			stream.WriteByte((byte)Type);
             stream.WriteByte(4);
             stream.WriteByte(0);
 

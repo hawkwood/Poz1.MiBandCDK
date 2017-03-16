@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Plugin.BLE;
-using Poz1.CDK.MiBand;
+using Poz1.MiBandCDK;
 using Xamarin.Forms;
 
 namespace PozFit
@@ -27,11 +27,9 @@ namespace PozFit
 
 				if (a.Device.Name == "MI1S") 
 				{
-					var band = new Band(a.Device);
+					var band = new MiBand(a.Device);
 
-					await band.ConnectAsync();
-
-					var time = await band.GetHertRateScan(HeartRateMode.Spot);
+					await band.TestAPI();
 				}
 			};
 

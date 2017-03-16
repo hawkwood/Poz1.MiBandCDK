@@ -1,22 +1,15 @@
 ﻿using System;
 
-namespace Poz1.CDK.MiBand
+namespace Poz1.MiBandCDK.Model
 {
     public class BatteryInfo
     {
         #region Properties
 
-        private int _level;
-        public int Level { get { return _level; } }
-
-        private int _cycles;
-        public int Cycles { get { return _cycles; } }
-
-        private BatteryStatus _status;
-        public BatteryStatus Status { get { return _status; } }
-
-        private DateTime _lastChargedDate;
-        public DateTime LastChargedDate { get { return _lastChargedDate; } }
+		public int Level { get; }
+		public int Cycles { get; }
+		public BatteryStatus Status { get; }
+		public DateTime LastChargedDate { get; }
 
         #endregion
 
@@ -27,10 +20,10 @@ namespace Poz1.CDK.MiBand
                 throw new InvalidOperationException("Data is not valid for BatteryInfo");
             }
 
-            _level = data[0];
-            _status = StatusFromByte(data[9]);
-            _cycles = 0xffff & (0xff & data[7] | (0xff & data[8]) << 8);
-            _lastChargedDate = new DateTime(data[1] + 2000, data[2], data[3], data[4], data[5], data[6]);
+            Level = data[0];
+			Status = StatusFromByte(data[9]);
+			Cycles = 0xffff & (0xff & data[7] | (0xff & data[8]) << 8);
+			LastChargedDate = new DateTime(data[1] + 2000, data[2], data[3], data[4], data[5], data[6]);
         }
 
         private BatteryStatus StatusFromByte(byte b)
