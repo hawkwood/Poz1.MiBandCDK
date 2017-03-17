@@ -13,6 +13,7 @@ namespace Poz1.MiBandCDK
         public const string MI_1A = "MI1A";
         public const string MI_1S = "MI1S";
     }
+
 	public static class MiBandService
 	{
 		public static Guid GenericAccessService = new Guid("00001800-0000-1000-8000-00805f9b34fb");
@@ -109,10 +110,8 @@ namespace Poz1.MiBandCDK
         public static byte[] FactoryReset = { 9 };
         public static byte[] SelfTest = { 2 };
         
-       
-
-		        public static byte[] EnableNotifications = { 0x01, 0x00 };
-
+        public static byte[] EnableNotifications = { 0x01, 0x00 };
+		public static byte[] DisableNotifications = {0x00, 0x00};
         /* COMMANDS: usually sent to UUID_CHARACTERISTIC_CONTROL_POINT characteristic */
 
         public static   byte SetTimer = 0x4;

@@ -13,10 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PozFit.iOS", "iOS\PozFit.iO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PozFit.Droid", "Droid\PozFit.Droid.csproj", "{C8A53F1D-573C-4B7B-859F-B0BF16031C1D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "New Folder", "New Folder", "{08605761-8770-4E73-B861-541232256AA4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poz1.BLE.Droid", "..\Poz1.BLE.GitHub\Poz1.BLE.Library\Poz1.BLE.Droid\Poz1.BLE.Droid.csproj", "{B4AE1BAC-B991-45FB-9A54-B94142D50396}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,18 +71,6 @@ Global
 		{C8A53F1D-573C-4B7B-859F-B0BF16031C1D}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{C8A53F1D-573C-4B7B-859F-B0BF16031C1D}.Debug|iPhone.ActiveCfg = Debug|Any CPU
 		{C8A53F1D-573C-4B7B-859F-B0BF16031C1D}.Debug|iPhone.Build.0 = Debug|Any CPU
-		{B4AE1BAC-B991-45FB-9A54-B94142D50396}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B4AE1BAC-B991-45FB-9A54-B94142D50396}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B4AE1BAC-B991-45FB-9A54-B94142D50396}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B4AE1BAC-B991-45FB-9A54-B94142D50396}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B4AE1BAC-B991-45FB-9A54-B94142D50396}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{B4AE1BAC-B991-45FB-9A54-B94142D50396}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{B4AE1BAC-B991-45FB-9A54-B94142D50396}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{B4AE1BAC-B991-45FB-9A54-B94142D50396}.Release|iPhone.Build.0 = Release|Any CPU
-		{B4AE1BAC-B991-45FB-9A54-B94142D50396}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{B4AE1BAC-B991-45FB-9A54-B94142D50396}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{B4AE1BAC-B991-45FB-9A54-B94142D50396}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{B4AE1BAC-B991-45FB-9A54-B94142D50396}.Debug|iPhone.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,6 +79,5 @@ Global
 		{F2347922-EC74-4A60-9A9E-252A11F963F6} = {A9962DBD-009D-42EF-A91E-D09D4A557C5B}
 		{869D4854-FECA-4990-9F41-F815B32D41E5} = {A9962DBD-009D-42EF-A91E-D09D4A557C5B}
 		{C8A53F1D-573C-4B7B-859F-B0BF16031C1D} = {A9962DBD-009D-42EF-A91E-D09D4A557C5B}
-		{B4AE1BAC-B991-45FB-9A54-B94142D50396} = {08605761-8770-4E73-B861-541232256AA4}
 	EndGlobalSection
 EndGlobal
