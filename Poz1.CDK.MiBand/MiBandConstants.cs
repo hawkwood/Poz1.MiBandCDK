@@ -7,17 +7,18 @@ namespace Poz1.MiBandCDK
         public const string MAC_ADDRESS_FILTER_1_1A = "88:0F:10";
         public const string MAC_ADDRESS_FILTER_1S = "C8:0F:10";
     }
-    public enum MiBandVersion
+
+    public struct MiBandHWVersion
     {
-        MI1,
-        MI1A,
-        MI1S
+        public const string MI_1 = "MI1";
+        public const string MI_1A = "MI1A";
+        public const string MI_1S = "MI1S";
     }
 
 	public static class MiBandService
 	{
-		public static Guid GenericAccessService = new Guid("00001800-0000-1000-8000-00805f9b34fb");
-		public static Guid GenericAttributeService = new Guid("00001801-0000-1000-8000-00805f9b34fb");
+		public static Guid GenericAccess = new Guid("00001800-0000-1000-8000-00805f9b34fb");
+		public static Guid GenericAttribute = new Guid("00001801-0000-1000-8000-00805f9b34fb");
 		public static Guid MainService = new Guid("0000fee0-0000-1000-8000-00805f9b34fb");
 		public static Guid ServiceUnknown = new Guid("0000fee1-0000-1000-8000-00805f9b34fb");
 		public static Guid HeartRateService = new Guid("0000180d-0000-1000-8000-00805f9b34fb");
@@ -26,18 +27,20 @@ namespace Poz1.MiBandCDK
 
 	public class MiBandCharacteristic
 	{
-		#region GenericAccessService
-		public static Guid GenericDeviceName = new Guid("00002A00-0000-1000-8000-00805f9b34fb");
+		#region GenericAccess
+		public static Guid DeviceName = new Guid("00002A00-0000-1000-8000-00805f9b34fb");
 		public static Guid Appereance = new Guid("00002A01-0000-1000-8000-00805f9b34fb");
-		public static Guid ReconnectionAddress = new Guid("00002A02-0000-1000-8000-00805f9b34fb");
+		public static Guid PeripheralPrivacyFlag = new Guid("00002A02-0000-1000-8000-00805f9b34fb");
 		public static Guid PeripheralPreferredConnectionParameters = new Guid("00002A04-0000-1000-8000-00805f9b34fb");
 		#endregion
+
 		#region GenericAttributeService
 		public static Guid ServiceChanged = new Guid("00002A05-0000-1000-8000-00805f9b34fb");
 		#endregion
+
 		#region MainService
 		public static Guid DeviceInfo = new Guid("0000ff01-0000-1000-8000-00805f9b34fb");
-		public static Guid DeviceName = new Guid("0000ff02-0000-1000-8000-00805f9b34fb");
+		public static Guid DevicePName = new Guid("0000ff02-0000-1000-8000-00805f9b34fb");
 		public static Guid GeneralNotification = new Guid("0000ff03-0000-1000-8000-00805f9b34fb");
 		public static Guid UserInfo = new Guid("0000ff04-0000-1000-8000-00805f9b34fb");
 		public static Guid ControlPoint = new Guid("0000ff05-0000-1000-8000-00805f9b34fb");
@@ -54,8 +57,11 @@ namespace Poz1.MiBandCDK
 		public static Guid Unknown00 = new Guid("0000ff10-0000-1000-8000-00805f9b34fb");
 		public static Guid Unknown01 = new Guid("0000fec9-0000-1000-8000-00805f9b34fb");
 		#endregion
+
 		#region ServiceUnknown
+		//MANY! fee1
 		#endregion
+
 		#region ImmediateAlertService
 		public static Guid Vibration = new Guid("00002a06-0000-1000-8000-00805f9b34fb");
 		#endregion

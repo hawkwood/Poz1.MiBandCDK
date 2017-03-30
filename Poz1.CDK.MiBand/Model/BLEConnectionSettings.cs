@@ -3,28 +3,28 @@ using System.Text;
 
 namespace Poz1.MiBandCDK.Model
 {
-    public class LEParameter
+    public class BLEConnectionSettings
     {
         #region Properties
 
 		public int MinConnectionInterval { get;}
 		public int MaxConnectionInterval { get; }
-		public int Latency { get; }
+		public int SlaveLatency { get; }
 		public int Timeout { get; }
 		public int AdvertisementInterval { get; }
 
         #endregion
 
-        public LEParameter(int minConnectionInterval, int maxConnectionInterval, int latency, int timeout, int advertisementInterval)
+        public BLEConnectionSettings(int minConnectionInterval, int maxConnectionInterval, int latency, int timeout, int advertisementInterval)
         {
             MinConnectionInterval = minConnectionInterval;
             MaxConnectionInterval = maxConnectionInterval;
-            Latency = latency;
+            SlaveLatency = latency;
 			Timeout = timeout;
 			AdvertisementInterval = advertisementInterval;
         }
 
-        public LEParameter(byte[] data)
+        public BLEConnectionSettings(byte[] data)
         {
             if (data.Length < 12)
             {
@@ -33,7 +33,7 @@ namespace Poz1.MiBandCDK.Model
 
 			MinConnectionInterval = (0xFF & data[1]) << 8 | (data[0] & 0xFF);
 			MaxConnectionInterval = (0xFF & data[3]) << 8 | (data[2] & 0xFF);
-			Latency = (0xFF & data[5]) << 8 | (data[6] & 0xFF);
+			SlaveLatency = (0xFF & data[5]) << 8 | (data[6] & 0xFF);
 			Timeout = (0xFF & data[7]) << 8 | (data[8] & 0xFF);
 			AdvertisementInterval = (0xFF & data[11]) << 8 | (data[10] & 0xFF);
         }
@@ -45,8 +45,8 @@ namespace Poz1.MiBandCDK.Model
 			_data[1] = (byte)(0xff & MinConnectionInterval >> 8);
 			_data[2] = (byte)(MaxConnectionInterval & 0xff);
 			_data[3] = (byte)(0xff & MaxConnectionInterval >> 8);
-			_data[4] = (byte)(Latency & 0xff);
-			_data[5] = (byte)(0xff & Latency >> 8);
+			_data[4] = (byte)(SlaveLatency & 0xff);
+			_data[5] = (byte)(0xff & SlaveLatency >> 8);
 			_data[6] = (byte)(Timeout & 0xff);
 			_data[7] = (byte)(0xff & Timeout >> 8);
             _data[8] = 0;
@@ -63,7 +63,7 @@ namespace Poz1.MiBandCDK.Model
             stringBuilder.Append("[[[LeParameter]]]");
             stringBuilder.Append("\n  connIntMin: " + ((int)(((double)this.MinConnectionInterval) * 1.25d)) + "ms");
             stringBuilder.Append("\n  connIntMax: " + ((int)(((double)this.MaxConnectionInterval) * 1.25d)) + "ms");
-            stringBuilder.Append("\n     latency: " + this.Latency + "ms");
+            stringBuilder.Append("\n     latency: " + this.SlaveLatency + "ms");
             stringBuilder.Append("\n     timeout: " + (this.Timeout * 10) + "ms");
             //stringBuilder.append("\n     connInt: " + ((int)(((double)this.f11253e) * 1.25d)) + "ms");
             stringBuilder.Append("\n      advInt: " + ((int)(((double)this.AdvertisementInterval) * 0.625d)) + "ms");
@@ -71,19 +71,19 @@ namespace Poz1.MiBandCDK.Model
         }
 
 
-        public static LEParameter High
+        public static BLEConnectionSettings High
         {
             get
             {
-                return new LEParameter(460, 500, 0, 500, 0);
+                return new BLEConnectionSettings(460, 500, 0, 500, 0);
             }
         }
 
-        public static LEParameter Low
+        public static BLEConnectionSettings Low
         {
             get
             {
-                return new LEParameter(39, 49, 0, 500, 0);
+                return new BLEConnectionSettings(39, 49, 0, 500, 0);
             }
         }
     }
