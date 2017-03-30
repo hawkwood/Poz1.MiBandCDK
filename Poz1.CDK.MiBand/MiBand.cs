@@ -15,9 +15,7 @@ namespace Poz1.MiBandCDK
 		private IDevice band;
 		private TaskCompletionSource<List<int>> heartRateTCS;
 		private TaskCompletionSource<List<List<ActivityData>>> activityTCS;
-
-
-
+        
 		public string MacAddress { get; }
 
 		#region Events
@@ -31,20 +29,23 @@ namespace Poz1.MiBandCDK
 		public MiBand(IDevice band)
 		{
 			this.band = band;
-
-			//this.MacAddress = band.NativeDevice
 		}
 
         #region Public Methods
+
+        /// <summary>
+        /// This is the same of using CrossBluetoothLE.Current.Adapter.ConnectToDeviceAsync();
+        /// </summary>
+        /// <returns></returns>
         public async Task ConnectAsync()
         {
 			await CrossBluetoothLE.Current.Adapter.ConnectToDeviceAsync(band);
         }
 
         /// <summary>
-        /// Once the Miband is actively paired with a device, other devices won't discover it
+        /// Once the MiBand is actively paired with a device, other devices won't discover it
         /// </summary>
-        /// <returns>True if pairing was Successful</returns>
+        /// <returns>True if pairing was successful</returns>
         public async Task<bool> PairAsync()
         {
 			try
