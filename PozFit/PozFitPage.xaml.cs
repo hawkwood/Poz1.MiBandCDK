@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Plugin.BLE;
 using Poz1.MiBandCDK;
 using Xamarin.Forms;
@@ -29,7 +30,16 @@ namespace PozFit
 				{
 					var band = new MiBand(a.Device);
 
-					await band.TestAPI();
+					await band.ConnectAsync();
+
+					await band.EnableGravitySensorNotifications();
+					//var info = await band.GetDeviceInfoAsync();
+					//var steps = await band.GetStepsAsync();
+					//var battery = await band.GetBatteryInfoAsync();
+					//var deviceName = await band.GetDeviceNameAsync();
+					//var userInfo = await band.GetUserInfoAsync();
+					//var time = await band.GetTimeAsync();
+					//var bleSettings = await band.GetBLEConnectionSettingsAsync();
 				}
 			};
 

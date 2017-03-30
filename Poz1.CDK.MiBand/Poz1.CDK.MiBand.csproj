@@ -39,7 +39,7 @@
     <Compile Include="Model\BaseInfo.cs" />
     <Compile Include="Model\BatteryInfo.cs" />
     <Compile Include="Model\DeviceInfo.cs" />
-    <Compile Include="Model\LEParameter.cs" />
+    <Compile Include="Model\BLEConnectionSettings.cs" />
     <Compile Include="MiBand.cs" />
     <Compile Include="MiBandConstants.cs" />
     <Compile Include="MiBandEventArgs.cs" />

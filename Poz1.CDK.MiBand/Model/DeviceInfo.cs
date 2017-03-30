@@ -19,7 +19,7 @@ namespace Poz1.MiBandCDK.Model
 
 		public int Feature { get; }
         public int Appearance { get; }
-        public string DeviceId { get;}
+		public string MacAddress { get;}
         public int ProfileVersion { get; }
         public int FirmwareVersion { get; }
         public int HWVersion { get; }
@@ -47,7 +47,7 @@ namespace Poz1.MiBandCDK.Model
         {
             if ((data.Length == 16 || data.Length == 20) && CheckChecksum(data))
             {
-                DeviceId = string.Format("{0:X2}:{1:X2}:{2:X2}:{3:X2}:{4:X2}:{5:X2}:{6:X2}:{7:X2}", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
+                MacAddress = string.Format("{0:X2}:{1:X2}:{2:X2}:{3:X2}:{4:X2}:{5:X2}:{6:X2}:{7:X2}", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
 				ProfileVersion = BitConverter.ToInt32(data, 8);
 				FirmwareVersion = BitConverter.ToInt32(data, 12);
 				HWVersion = data[6] & 255;
@@ -80,7 +80,7 @@ namespace Poz1.MiBandCDK.Model
         public override string ToString()
         {
             return "DeviceInfo{" +
-                    "DeviceId='" + DeviceId + '\'' +
+                    "DeviceId='" + MacAddress + '\'' +
                     ", ProfileVersion=" + ProfileVersion +
                     ", FWVersion=" + FirmwareVersion +
                     ", HWVersion=" + HWVersion +
