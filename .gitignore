@@ -3,3 +3,12 @@
 ################################################################################
 
 /.vs
+/packages
+/Poz1.CDK.MiBand/bin
+/Poz1.CDK.MiBand/obj
+/Sample/Droid/bin
+/Sample/Droid/obj
+/Sample/iOS/obj
+/Sample/iOS/bin
+/Sample/PozFit/bin
+/Sample/PozFit/obj
