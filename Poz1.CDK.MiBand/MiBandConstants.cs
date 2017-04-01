@@ -8,11 +8,9 @@ namespace Poz1.MiBandCDK
         public const string MAC_ADDRESS_FILTER_1S = "C8:0F:10";
     }
 
-    public struct MiBandHWVersion
+    public enum MiBandHWVersion
     {
-        public const string MI_1 = "MI1";
-        public const string MI_1A = "MI1A";
-        public const string MI_1S = "MI1S";
+        MI1, MI1A, MI1S
     }
 
 	public static class MiBandService

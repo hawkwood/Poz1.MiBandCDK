@@ -1,4 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:PozFit" xmlns:control="clr-namespace:PozFit.Controls"  x:Class="PozFit.PozFitPage">
-    <control:BindableListView ItemsSource="{Binding BLEDevicesList}" ItemTappedCommand="{Binding ConnectToDeviceCommand}" ></control:BindableListView>
-</ContentPage>
+<MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:PozFit" xmlns:control="clr-namespace:PozFit.Controls"  x:Class="PozFit.PozFitPage">
+    <MasterDetailPage.Detail>
+        <NavigationPage  BarBackgroundColor="Orange" BarTextColor="White">
+            <x:Arguments>
+                <TabbedPage>
+                    <TabbedPage.Children>
+                        <control:BindableContentPage OnAppearingCommand="{Binding OnAppearingCommand}">
+                            <control:BindableListView ItemsSource="{Binding BLEDevicesList}" ItemTappedCommand="{Binding ConnectToDeviceCommand}"></control:BindableListView>
+                        </control:BindableContentPage>
+                        <control:BindableContentPage>
+                            <control:BindableListView ItemsSource="{Binding BLEDevicesList}" ItemTappedCommand="{Binding ConnectToDeviceCommand}"></control:BindableListView>
+                        </control:BindableContentPage>
+                    </TabbedPage.Children>
+                </TabbedPage>
+            </x:Arguments>
+        </NavigationPage>
+    </MasterDetailPage.Detail>
+    <MasterDetailPage.Master>
+        <control:BindableContentPage>
+            
+        </control:BindableContentPage>
+    </MasterDetailPage.Master>
+</MasterDetailPage>

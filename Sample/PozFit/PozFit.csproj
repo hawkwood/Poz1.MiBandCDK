@@ -37,6 +37,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\BindableContentPage.cs" />
     <Compile Include="Controls\BindableListView.cs" />
     <Compile Include="PozFitPage.xaml.cs">
       <DependentUpon>PozFitPage.xaml</DependentUpon>

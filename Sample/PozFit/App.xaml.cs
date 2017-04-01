@@ -8,7 +8,7 @@ namespace PozFit
 		{
 			InitializeComponent();
 
-			MainPage = new PozFitPage();
+			MainPage = new  PozFitPage();
 		}
 
 		protected override void OnStart()

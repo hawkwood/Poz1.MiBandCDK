@@ -19,12 +19,12 @@ namespace Poz1.MiBandCDK
 		public event EventHandler<byte[]> GeneralNotificationReceived;
 		public event EventHandler<byte[]> GravitySensorNotificationReceived;
 		public event EventHandler<RealTimeStepsEventArgs> RealTimeStepsNotificationReceived;
-
+        
 		public MiBand(IDevice band)
 		{
 			this.band = band;
 		}
-
+        
         public async Task ConnectAsync()
         {
 			try
@@ -41,7 +41,9 @@ namespace Poz1.MiBandCDK
         /// <returns>True if pairing was Successful</returns>
         public async Task<bool> PairAsync()
         {
-			try
+            CheckBandConnection();
+
+            try
 			{
 				var mainService = await band.GetServiceAsync(MiBandService.MainService);
 				var pairChar = await mainService.GetCharacteristicAsync(MiBandCharacteristic.Pair);
@@ -70,7 +72,9 @@ namespace Poz1.MiBandCDK
 
         public async Task<DeviceInfo> GetDeviceInfoAsync()
         {
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var deviceInfo = await mainService.GetCharacteristicAsync(MiBandCharacteristic.DeviceInfo);
 
 			var ch = await deviceInfo.ReadAsync();
@@ -87,7 +91,9 @@ namespace Poz1.MiBandCDK
 
 		public async Task<int> GetStepsAsync()
         {
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var realtimeSteps = await mainService.GetCharacteristicAsync(MiBandCharacteristic.RealtimeSteps);
 
 			var ch = await realtimeSteps.ReadAsync();
@@ -97,7 +103,9 @@ namespace Poz1.MiBandCDK
 
         public async Task<BatteryInfo> GetBatteryInfoAsync()
         {
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var battery = await mainService.GetCharacteristicAsync(MiBandCharacteristic.Battery);
 
 			var ch = await battery.ReadAsync();
@@ -116,7 +124,9 @@ namespace Poz1.MiBandCDK
 
         public async Task<string> GetDeviceNameAsync()
         {
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var deviceName = await mainService.GetCharacteristicAsync(MiBandCharacteristic.DevicePName);
 
 			var ch = await deviceName.ReadAsync();
@@ -126,6 +136,8 @@ namespace Poz1.MiBandCDK
 
         public async Task SetDeviceNameAsync(string name)
         {
+            CheckBandConnection();
+
             var data = Encoding.UTF8.GetBytes(name);
 
 			var mainService = await band.GetServiceAsync(MiBandService.MainService);
@@ -136,7 +148,9 @@ namespace Poz1.MiBandCDK
 
         public async Task<UserInfo> GetUserInfoAsync()
         {
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var userInfo = await mainService.GetCharacteristicAsync(MiBandCharacteristic.UserInfo);
 
 			var ch = await userInfo.ReadAsync();
@@ -159,7 +173,9 @@ namespace Poz1.MiBandCDK
 		/// <param name="macAddress">MacAddress. This can be obtained from GetDeviceInfoAsync()</param>
         public async Task SetUserInfoAsync(UserInfo user, string macAddress)
         {
-			byte[] data = user.ToByteArray(macAddress);
+            CheckBandConnection();
+
+            byte[] data = user.ToByteArray(macAddress);
 
 			var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var userInfo = await mainService.GetCharacteristicAsync(MiBandCharacteristic.UserInfo);
@@ -169,7 +185,9 @@ namespace Poz1.MiBandCDK
 
         public async Task<DateTime> GetTimeAsync()
         {
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var dateTime = await mainService.GetCharacteristicAsync(MiBandCharacteristic.DateTime);
 
 			var ch = await dateTime.ReadAsync();
@@ -186,6 +204,8 @@ namespace Poz1.MiBandCDK
 
         public async Task SetTimeAsync(DateTime time)
         {
+            CheckBandConnection();
+
             byte[] data = new byte[]
             {
                 (byte)(time.Year -2000),
@@ -226,7 +246,9 @@ namespace Poz1.MiBandCDK
 
         public async Task SetStatisticsAsync(Statistics stats)
         {
-			byte[] data = stats.ToByteArray();
+            CheckBandConnection();
+
+            byte[] data = stats.ToByteArray();
 
 			var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var statistics = await mainService.GetCharacteristicAsync(MiBandCharacteristic.Statistics);
@@ -236,21 +258,27 @@ namespace Poz1.MiBandCDK
 
         public async Task FactoryReset()
         {
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var controlChar = await mainService.GetCharacteristicAsync(MiBandCharacteristic.ControlPoint);
 			await controlChar.WriteAsync(MiBandCommand.FactoryReset);
         }
 
         public async Task Reboot()
         {
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var controlChar = await mainService.GetCharacteristicAsync(MiBandCharacteristic.ControlPoint);
 			await controlChar.WriteAsync(MiBandCommand.Reboot);        
 		}
 
         public async Task SetLedColorAsync(LedColor color)
         {
-			byte[] data;
+            CheckBandConnection();
+
+            byte[] data;
 
             switch (color)
             {
@@ -277,14 +305,18 @@ namespace Poz1.MiBandCDK
       
 		public async Task SetLEParametersAsync(BLEConnectionSettings param)
         {
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var bleParams = await mainService.GetCharacteristicAsync(MiBandCharacteristic.LeParams);
 			await bleParams.WriteAsync(param.ToByteArray());
         }
 
 		public async Task<BLEConnectionSettings> GetBLEConnectionSettingsAsync()
         {
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var bleParams = await mainService.GetCharacteristicAsync(MiBandCharacteristic.LeParams);
 			var ch = await bleParams.ReadAsync();
 
@@ -317,6 +349,8 @@ namespace Poz1.MiBandCDK
 
         public async Task SetFitnessGoalAsync(int fitnessGoal)
         {
+            CheckBandConnection();
+
             byte[] data = { MiBandCommand.SetFitnessGoal, 0, (byte)(fitnessGoal & 0xff), (byte)(((int)fitnessGoal >> 8) & 0xff) };
 
 			var mainService = await band.GetServiceAsync(MiBandService.MainService);
@@ -326,6 +360,8 @@ namespace Poz1.MiBandCDK
 
         public async Task SetWearLocationAsync(WearLocation location)
         {
+            CheckBandConnection();
+
             byte[] data = { MiBandCommand.SetWearLocation[0], (byte)location };
 
 			var mainService = await band.GetServiceAsync(MiBandService.MainService);
@@ -440,31 +476,35 @@ namespace Poz1.MiBandCDK
         #region Vibration
         public async Task StartVibrationAsync(VibrationMode mode)
         {
-			byte[] data;
+            CheckBandConnection();
 
-            switch (mode)
-            {
-                case VibrationMode.VibrationWithLed:
-                    data = MiBandCommand.VibrationWithLed;
-                    break;
-                case VibrationMode.Vibration10TimesWithLed:
-                    data = MiBandCommand.Vibration10TimesWithLed;
-                    break;
-                case VibrationMode.VibrationWithoutLed:
-                    data = MiBandCommand.VibrationWithoutLed;
-                    break;
-                default:
-                    return;
-            }
+            byte[] data;
 
-			var mainService = await band.GetServiceAsync(MiBandService.ImmediateAlertService);
-			var controlChar = await mainService.GetCharacteristicAsync(MiBandCharacteristic.Vibration);
-			await controlChar.WriteAsync(data);
+                switch (mode)
+                {
+                    case VibrationMode.Vibration2TimesWithLed:
+                        data = MiBandCommand.VibrationWithLed;
+                        break;
+                    case VibrationMode.Vibration10TimesWithLed:
+                        data = MiBandCommand.Vibration10TimesWithLed;
+                        break;
+                    case VibrationMode.VibrationWithoutLed:
+                        data = MiBandCommand.VibrationWithoutLed;
+                        break;
+                    default:
+                        return;
+                }
+
+                var mainService = await band.GetServiceAsync(MiBandService.ImmediateAlertService);
+                var controlChar = await mainService.GetCharacteristicAsync(MiBandCharacteristic.Vibration);
+                await controlChar.WriteAsync(data);
         }
 
         public async Task StopVibrationAsync()
         {
-			var mainService = await band.GetServiceAsync(MiBandService.ImmediateAlertService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.ImmediateAlertService);
 			var controlChar = await mainService.GetCharacteristicAsync(MiBandCharacteristic.Vibration);
 			await controlChar.WriteAsync(MiBandCommand.StopVibration);
         }
@@ -476,7 +516,9 @@ namespace Poz1.MiBandCDK
 
         public async Task EnableGravitySensorNotifications()
         {
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var controlPoint = await mainService.GetCharacteristicAsync(MiBandCharacteristic.ControlPoint);
 
 			var sensorData = await mainService.GetCharacteristicAsync(MiBandCharacteristic.SensorData);
@@ -522,7 +564,9 @@ namespace Poz1.MiBandCDK
 
         public async Task DisableGravitySensorNotifications()
         {
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var controlPoint = await mainService.GetCharacteristicAsync(MiBandCharacteristic.ControlPoint);
 			var sensorData = await mainService.GetCharacteristicAsync(MiBandCharacteristic.SensorData);
 
@@ -542,7 +586,9 @@ namespace Poz1.MiBandCDK
 
         public async Task EnableRealtimeStepsNotifications()
         {
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var controlPoint = await mainService.GetCharacteristicAsync(MiBandCharacteristic.ControlPoint);
 
 			var realTimeSteps = await mainService.GetCharacteristicAsync(MiBandCharacteristic.RealtimeSteps);
@@ -568,7 +614,9 @@ namespace Poz1.MiBandCDK
 
 		public async Task DisableRealtimeStepsNotifications()
 		{
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var controlPoint = await mainService.GetCharacteristicAsync(MiBandCharacteristic.ControlPoint);
 			var realTimeSteps = await mainService.GetCharacteristicAsync(MiBandCharacteristic.RealtimeSteps);
 
@@ -593,6 +641,8 @@ namespace Poz1.MiBandCDK
         /// </returns>
         public Task<List<int>> GetHertRateScan(HeartRateMode mode)
         {
+            CheckBandConnection();
+
             var heartRateTCS = new TaskCompletionSource<List<int>>();
             var heartRateReadings = new List<int>();
 
@@ -701,6 +751,8 @@ namespace Poz1.MiBandCDK
 
         public Task<List<List<ActivityData>>> GetActivitiesAsync()
         {
+            CheckBandConnection();
+
             var activityTCS = new TaskCompletionSource<List<List<ActivityData>>>();
 			int _totalBytes = 0;
 			int _packageBytes = 0;
@@ -728,7 +780,10 @@ namespace Poz1.MiBandCDK
 						var data = args.Characteristic.Value;
 						if (data.Length == 11)
 						{
-							if (_activityDataBuffer.Count != 0)
+                            // byte 1 to 6 represent a timestamp
+                            _packageTimeStamp = new DateTime(data[1] + 2000, data[2], data[3], data[4], data[5], data[6]);
+
+                            if (_activityDataBuffer.Count != 0)
 							{
 								var activitiesList = new List<ActivityData>();
 								//var activitiesNumber = _activityDataBuffer.Count / 4;
@@ -751,10 +806,7 @@ namespace Poz1.MiBandCDK
 							int dataType = data[0];
 
 							Debug.WriteLine(dataType + "   Has to be 1");
-
-							// byte 1 to 6 represent a timestamp
-							_packageTimeStamp = new DateTime(data[1] + 2000, data[2], data[3], data[4], data[5], data[6]);
-
+                            
 							// counter of all data held by the band
 							if (_totalBytes == 0)
 								_totalBytes = ((data[7] & 0xff) | ((data[8] & 0xff) << 8)) * 4;
@@ -799,7 +851,9 @@ namespace Poz1.MiBandCDK
 
 		public async Task EnableGeneralNotificationsAsync()
         {
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var generalNotification = await mainService.GetCharacteristicAsync(MiBandCharacteristic.GeneralNotification);
 		
 			generalNotificationRecevived = (o, args) =>
@@ -814,13 +868,21 @@ namespace Poz1.MiBandCDK
 
 		public async Task DisableGeneralNotifications()
 		{
-			var mainService = await band.GetServiceAsync(MiBandService.MainService);
+            CheckBandConnection();
+
+            var mainService = await band.GetServiceAsync(MiBandService.MainService);
 			var generalNotification = await mainService.GetCharacteristicAsync(MiBandCharacteristic.GeneralNotification);
 
 			generalNotification.ValueUpdated -= generalNotificationRecevived;
 
 			await generalNotification.StopUpdatesAsync();
 		}
+
+        private void CheckBandConnection()
+        {
+            if (!IsConnected)
+                throw new InvalidOperationException("Please connect to MiBand first");
+        }
 
 		public async Task TestAPI()
 		{

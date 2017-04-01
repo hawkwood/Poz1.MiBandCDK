@@ -29,7 +29,7 @@
 
     public enum VibrationMode
     {
-        VibrationWithLed,
+        Vibration2TimesWithLed,
         Vibration10TimesWithLed,
         VibrationWithoutLed
     }
