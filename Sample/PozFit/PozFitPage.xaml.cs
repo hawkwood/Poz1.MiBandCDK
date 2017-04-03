@@ -6,6 +6,7 @@ using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.EventArgs;
 using Poz1.MiBandCDK.Model;
 using System;
+using Poz1.MiBandCDK.Devices;
 
 namespace PozFit
 {
@@ -41,9 +42,9 @@ namespace PozFit
                     {
                         try
                         {
-                            var band = new MiBand(device);
+                            var band = MiBandFactory.Create<IMiBand1>(device);
                             await band.ConnectAsync();
-                            await band.StartVibrationAsync(VibrationMode.Vibration2TimesWithLed);
+                            await band.Vibration.StartVibrationAsync(VibrationMode.Vibration2TimesWithLed);
                         }
                         catch(Exception e)
                         {

@@ -13,7 +13,7 @@ namespace Poz1.MiBandCDK.Services
 
         public event EventHandler<RealTimeStepsEventArgs> RealTimeStepsNotificationReceived;
 
-        public ActivityService(MiBand band)
+        internal ActivityService(MiBand band)
         {
             this.band = band;
         }

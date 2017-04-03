@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Poz1.MiBandCDK.Services
@@ -12,7 +10,7 @@ namespace Poz1.MiBandCDK.Services
     {
         MiBand band;
 
-        public HeartRateService(MiBand band)
+        internal HeartRateService(MiBand band)
         {
             this.band = band;
         }

@@ -8,6 +8,7 @@ namespace Poz1.MiBandCDK.Devices
     public interface IMiBandBase
     {
         VibrationService Vibration { get; }
+        ActivityService Activity { get; }
 
         Task ConnectAsync();
         Task<bool> PairAsync();

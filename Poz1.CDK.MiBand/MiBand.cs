@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,21 +6,33 @@ using Plugin.BLE;
 using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.EventArgs;
 using Poz1.MiBandCDK.Model;
+using Poz1.MiBandCDK.Devices;
+using Poz1.MiBandCDK.Services;
 
 namespace Poz1.MiBandCDK
 {
-	public class MiBand
+	internal class MiBand : IMiBandBase, IMiBand1, IMiBand1A, IMiBand1S
 	{
 		internal IDevice device;
 
 		public bool IsConnected { get; private set; }
 
-		public event EventHandler<byte[]> GeneralNotificationReceived;
+        public VibrationService Vibration { get; }
+
+        public HeartRateService HeartRate { get; }
+
+        public ActivityService Activity { get; }
+
+        public event EventHandler<byte[]> GeneralNotificationReceived;
 		public event EventHandler<byte[]> GravitySensorNotificationReceived;
         
-		public MiBand(IDevice miBand)
+		internal MiBand(IDevice miBand)
 		{
 			this.device = miBand;
+
+            Vibration = new VibrationService(this);
+            Activity = new ActivityService(this);
+            HeartRate = new HeartRateService(this);
 		}
 
         #region MiBandBase
@@ -329,11 +340,6 @@ namespace Poz1.MiBandCDK
             var controlChar = await mainService.GetCharacteristicAsync(MiBandCharacteristic.ControlPoint);
             await controlChar.WriteAsync(data);
         }
-
-        #region ActivityService
-
-      
-        #endregion
         
         #region GravitySensor
 

@@ -9,6 +9,7 @@ namespace Poz1.MiBandCDK.Devices
 {
     public interface IMiBand1 : IMiBandBase
     {
+        bool IsConnected { get; }
         Task SetLedColorAsync(LedColor color);
     }
 }

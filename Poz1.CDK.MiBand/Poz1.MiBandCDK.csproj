@@ -39,6 +39,7 @@
     <Compile Include="Devices\IMiBand1A.cs" />
     <Compile Include="Devices\IMiBand1S.cs" />
     <Compile Include="Devices\IMiBandBase.cs" />
+    <Compile Include="MiBandFactory.cs" />
     <Compile Include="Model\ActivityData.cs" />
     <Compile Include="Model\BaseInfo.cs" />
     <Compile Include="Model\BatteryInfo.cs" />
