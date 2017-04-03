@@ -8,8 +8,8 @@
     <ProjectGuid>{67F9D3A8-F71E-4428-913F-C37AE82CDB24}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Poz1.CDK.MiBand</RootNamespace>
-    <AssemblyName>Poz1.CDK.MiBand</AssemblyName>
+    <RootNamespace>Poz1.MiBandCDK</RootNamespace>
+    <AssemblyName>Poz1.MiBandCDK</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -35,6 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Devices\IMiBand1.cs" />
+    <Compile Include="Devices\IMiBand1A.cs" />
+    <Compile Include="Devices\IMiBand1S.cs" />
+    <Compile Include="Devices\IMiBandBase.cs" />
     <Compile Include="Model\ActivityData.cs" />
     <Compile Include="Model\BaseInfo.cs" />
     <Compile Include="Model\BatteryInfo.cs" />
@@ -47,6 +51,9 @@
     <Compile Include="Model\Statistics.cs" />
     <Compile Include="Model\UserInfo.cs" />
     <Compile Include="Model\MiBandEnums.cs" />
+    <Compile Include="Services\ActivityService.cs" />
+    <Compile Include="Services\HeartRateService.cs" />
+    <Compile Include="Services\VibrationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Plugin.BLE, Version=1.2.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -59,6 +66,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
