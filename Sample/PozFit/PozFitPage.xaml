@@ -1,15 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:PozFit" xmlns:control="clr-namespace:PozFit.Controls"  x:Class="PozFit.PozFitPage">
     <MasterDetailPage.Detail>
-        <NavigationPage  BarBackgroundColor="Orange" BarTextColor="White">
+        <NavigationPage BarTextColor="White" Title="PozFit">
             <x:Arguments>
                 <TabbedPage>
                     <TabbedPage.Children>
-                        <control:BindableContentPage OnAppearingCommand="{Binding OnAppearingCommand}">
+                        <control:BindableContentPage OnAppearingCommand="{Binding OnAppearingCommand}" Title="Devices">
                             <control:BindableListView ItemsSource="{Binding BLEDevicesList}" ItemTappedCommand="{Binding ConnectToDeviceCommand}"></control:BindableListView>
                         </control:BindableContentPage>
-                        <control:BindableContentPage>
-                            <control:BindableListView ItemsSource="{Binding BLEDevicesList}" ItemTappedCommand="{Binding ConnectToDeviceCommand}"></control:BindableListView>
+                        <control:BindableContentPage Title="SDK">
+                            <control:BindableListView ItemsSource="{Binding BLESDKCommands}" ItemTappedCommand="{Binding SDKCommand}">
+								
+							</control:BindableListView>
                         </control:BindableContentPage>
                     </TabbedPage.Children>
                 </TabbedPage>
@@ -17,7 +19,7 @@
         </NavigationPage>
     </MasterDetailPage.Detail>
     <MasterDetailPage.Master>
-        <control:BindableContentPage>
+        <control:BindableContentPage Title="PozFit">
             
         </control:BindableContentPage>
     </MasterDetailPage.Master>

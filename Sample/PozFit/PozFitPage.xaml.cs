@@ -12,8 +12,9 @@ namespace PozFit
 	public partial class PozFitPage : MasterDetailPage
 	{
         public ObservableCollection<IDevice> BLEDevicesList { get; private set; }
+		public ObservableCollection<Command> BLESDKCommands { get; private set; }
 
-        public Command OnAppearingCommand
+		public Command OnAppearingCommand
         {
             get
             {
@@ -32,27 +33,35 @@ namespace PozFit
                 });
             }
         }
+
         public Command<IDevice> ConnectToDeviceCommand {
             get
             {
                 return new Command<IDevice>(async device =>
                 {
-                    if (device.Name == MiBandModel.MI1.ToString() || device.Name == MiBandModel.MI1A.ToString() || device.Name == MiBandModel.MI1S.ToString())
-                    {
-                        try
-                        {
-                            var band = new MiBand(device);
-                            await band.ConnectAsync();
-                            await band.StartVibrationAsync(VibrationMode.Vibration2TimesWithLed);
-                        }
-                        catch(Exception e)
-                        {
-                            throw e;
-                        }
-                    }
+					try
+					{
+						var miDevice = (MiBandModel)Enum.Parse(typeof(MiBandModel), device.Name);
+						switch (miDevice)
+						{
+							case MiBandModel.MI1:
+								{
+									var band = new MiBand(device);
+									await band.ConnectAsync();
+									await band.StartVibrationAsync(VibrationMode.Vibration2TimesWithLed);
+									break;
+								}
+						}
+					}
+					catch 
+					{
+						System.Diagnostics.Debug.WriteLine("Not a Supported MiBand device");
+					}
                 });
             }
         }
+
+
 
 		public PozFitPage()
 		{
