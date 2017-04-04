@@ -4,14 +4,10 @@ namespace Poz1.MiBandCDK.Model
 {
     public class BatteryInfo
     {
-        #region Properties
-
 		public int Level { get; }
 		public int Cycles { get; }
 		public BatteryStatus Status { get; }
 		public DateTime LastChargedDate { get; }
-
-        #endregion
 
         public BatteryInfo (byte[] data)
         {

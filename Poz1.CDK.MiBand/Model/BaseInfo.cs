@@ -2,7 +2,7 @@
 {
     public class BaseInfo
     {
-        public int GetCRC8(byte[] seq)
+        internal int GetCRC8(byte[] seq)
         {
             int len = seq.Length;
             int i = 0;
@@ -26,7 +26,7 @@
             return (crc & 0xff);
         }
 
-        public int GetInt(byte[] data, int from, int len)
+        internal int GetInt(byte[] data, int from, int len)
         {
             int ret = 0;
             for (int i = 0; i < len; ++i)

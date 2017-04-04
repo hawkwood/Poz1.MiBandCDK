@@ -44,7 +44,7 @@ namespace Poz1.MiBandCDK.Devices
 
         Task SetTimeAsync(DateTime time);
 
-        Task SetStatisticsAsync(Statistics stats);
+       // Task SetStatisticsAsync(Statistics stats);
 
         Task FactoryReset();
 

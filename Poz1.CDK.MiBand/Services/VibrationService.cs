@@ -7,7 +7,7 @@ namespace Poz1.MiBandCDK.Services
     {
         MiBand band;
 
-        public VibrationService(MiBand band)
+        internal VibrationService(MiBand band)
         {
             this.band = band;
         }

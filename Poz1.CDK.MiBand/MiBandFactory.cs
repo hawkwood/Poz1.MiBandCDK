@@ -11,7 +11,6 @@ namespace Poz1.MiBandCDK
         {
             try
             {
-                var miBandName = Enum.Parse(typeof(MiBandModel), device.Name);
                 return new MiBand(device) as T;
             }
             catch
