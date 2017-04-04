@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.10
+VisualStudioVersion = 15.0.26228.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poz1.CDK.MiBand", "Poz1.CDK.MiBand\Poz1.CDK.MiBand.csproj", "{67F9D3A8-F71E-4428-913F-C37AE82CDB24}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poz1.MiBandCDK", "Poz1.CDK.MiBand\Poz1.MiBandCDK.csproj", "{67F9D3A8-F71E-4428-913F-C37AE82CDB24}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Poz1.CDK.MiBand.Sample", "Poz1.CDK.MiBand.Sample", "{A9962DBD-009D-42EF-A91E-D09D4A557C5B}"
 EndProject

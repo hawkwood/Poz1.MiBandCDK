@@ -65,9 +65,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Poz1.CDK.MiBand\Poz1.CDK.MiBand.csproj">
+    <ProjectReference Include="..\..\Poz1.CDK.MiBand\Poz1.MiBandCDK.csproj">
       <Project>{67F9D3A8-F71E-4428-913F-C37AE82CDB24}</Project>
-      <Name>Poz1.CDK.MiBand</Name>
+      <Name>Poz1.MiBandCDK</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
