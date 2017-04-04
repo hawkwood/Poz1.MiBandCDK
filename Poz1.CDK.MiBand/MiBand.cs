@@ -37,10 +37,6 @@ namespace Poz1.MiBandCDK
 
         #region MiBandBase
 
-        /// <summary>
-        /// Establish a connection to MiBand
-        /// </summary>
-        /// <returns></returns>
         public async Task ConnectAsync()
         {
 			try
@@ -51,10 +47,6 @@ namespace Poz1.MiBandCDK
 			catch { throw; }
         }
 
-        /// <summary>
-        /// Once the Miband is actively paired with a device, other devices won't discover it
-        /// </summary>
-        /// <returns>True if pairing was Successful</returns>
         public async Task<bool> PairAsync()
         {
             CheckBandConnection();
@@ -169,12 +161,6 @@ namespace Poz1.MiBandCDK
             }
         }
 
-		/// <summary>
-		/// Sets the user info.
-		/// </summary>
-		/// <returns>The user info.</returns>
-		/// <param name="user">User.</param>
-		/// <param name="macAddress">MacAddress. This can be obtained from GetDeviceInfoAsync()</param>
         public async Task SetUserInfoAsync(UserInfo user, string macAddress)
         {
             CheckBandConnection();

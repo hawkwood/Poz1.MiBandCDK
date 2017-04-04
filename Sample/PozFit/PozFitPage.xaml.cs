@@ -46,7 +46,7 @@ namespace PozFit
                             await band.ConnectAsync();
                             await band.Vibration.StartVibrationAsync(VibrationMode.Vibration2TimesWithLed);
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
                             throw e;
                         }
