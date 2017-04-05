@@ -11,80 +11,38 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using PozFit.Controls;
+using System.Reflection;
 
 namespace PozFit
 {
 	public partial class PozFitPage : MasterDetailPage, INotifyPropertyChanged
 	{
         public ObservableCollection<IDevice> BLEDevicesList { get; private set; }
+        public ObservableCollection<MainMenuGroup> BandInfos { get; private set; }
 
-        private DeviceInfo deviceInfo;
-        public DeviceInfo DeviceInfo
+        private bool isScanning;
+        public bool IsScanning
         {
-            get { return deviceInfo; }
+            get { return isScanning; }
             set
             {
-                if(value != deviceInfo)
+                if (value != isScanning)
                 {
-                    deviceInfo = value;
+                    isScanning = value;
                     OnPropertyChanged();
                 }
             }
         }
 
-        private BatteryInfo batteryInfo;
-        public BatteryInfo BatteryInfo
+        public Command BLEScanCommand
         {
-            get { return batteryInfo; }
-            set
+            get
             {
-                if (value != batteryInfo)
+                return new Command(async () =>
                 {
-                    batteryInfo = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private UserInfo userInfo;
-        public UserInfo UserInfo
-        {
-            get { return userInfo; }
-            set
-            {
-                if (value != userInfo)
-                {
-                    userInfo = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private DateTime bandTime;
-        public DateTime BandTime
-        {
-            get { return bandTime; }
-            set
-            {
-                if (value != bandTime)
-                {
-                    bandTime = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private BLEConnectionSettings bleConnection;
-        public BLEConnectionSettings BleConnection
-        {
-            get { return bleConnection; }
-            set
-            {
-                if (value != bleConnection)
-                {
-                    bleConnection = value;
-                    OnPropertyChanged();
-                }
+                    await BLEScan();
+                });
             }
         }
 
@@ -94,40 +52,30 @@ namespace PozFit
             {
                 return new Command(async () =>
                 {
-
-                    var ble = CrossBluetoothLE.Current;
-                    var adapter = CrossBluetoothLE.Current.Adapter;
-
-                    adapter.DeviceDiscovered += (object sender, DeviceEventArgs e) =>
-                    {
-                        BLEDevicesList.Add(e.Device);
-                    };
-
-                    await adapter.StartScanningForDevicesAsync();
+                    if(BLEDevicesList.Count == 0)
+                        await BLEScan();
                 });
             }
         }
-
         public Command<IDevice> ConnectToDeviceCommand {
             get
             {
                 return new Command<IDevice>(async bleDevice =>
                 {
-                    //if (bleDevice.Name == MiBandModel.MI1.ToString() || bleDevice.Name == MiBandModel.MI1A.ToString() || bleDevice.Name == MiBandModel.MI1S.ToString())
-                    //{
-                        try
+                if (bleDevice.Name == MiBandModel.MI1.ToString() || bleDevice.Name == MiBandModel.MI1A.ToString() || bleDevice.Name == MiBandModel.MI1S.ToString())
+                {
+                    try
                         {
                             var band = MiBandFactory.Create<IMiBand1S>(bleDevice);
                             await band.ConnectAsync();
 
-                       var t = await band.HeartRate.GetHertRateScan(HeartRateMode.Spot);
-                            //await GetBandInfos(band);
+                            await GetBandInfos(band);
                         }
                         catch (Exception e)
                         {
                             throw e;
                         }
-                    //}
+                    }
                 });
             }
         }
@@ -137,16 +85,58 @@ namespace PozFit
             InitializeComponent();
 
             BLEDevicesList = new ObservableCollection<IDevice>();
+            BandInfos = new ObservableCollection<MainMenuGroup>();
+
             BindingContext = this;
+        }
+
+        async Task BLEScan()
+        {
+            IsScanning = true;
+
+            var ble = CrossBluetoothLE.Current;
+            var adapter = CrossBluetoothLE.Current.Adapter;
+
+            adapter.DeviceDiscovered += (object sender, DeviceEventArgs e) =>
+            {
+                BLEDevicesList.Add(e.Device);
+            };
+
+            await adapter.StartScanningForDevicesAsync();
+
+            IsScanning = false;
         }
 
         async Task GetBandInfos(IMiBandBase band)
         {
-            DeviceInfo = await band.GetDeviceInfoAsync();
-            BatteryInfo = await band.GetBatteryInfoAsync();
-            UserInfo = await band.GetUserInfoAsync();
-            BandTime = await band.GetTimeAsync();
-            BleConnection = await band.GetBLEConnectionSettingsAsync();
+            AddInfo(await band.GetDeviceInfoAsync());
+            AddInfo(await band.GetBatteryInfoAsync());
+            AddInfo(await band.GetUserInfoAsync());
+            AddInfo(await band.GetTimeAsync());
+            AddInfo(await band.GetBLEConnectionSettingsAsync());
+        }
+
+        void AddInfo(object info)
+        {
+            var type = info.GetType();
+            var group = new MainMenuGroup(type.Name);
+
+            if (type != typeof(DateTime))
+            {
+                TypeInfo typeInfo = type.GetTypeInfo();
+                foreach (PropertyInfo propInfo in typeInfo.DeclaredProperties)
+                {
+                    group.Add(new MainMenuItem() { Property = propInfo.Name, Value = propInfo.GetValue(info).ToString() });
+                }
+            }
+            else
+            {
+                var dateInfo = (DateTime)info;
+                group.Add(new MainMenuItem() { Property = "Date", Value = dateInfo.Date.ToString() });
+                group.Add(new MainMenuItem() { Property = "Time", Value = dateInfo.TimeOfDay.ToString() });
+            }
+
+            BandInfos.Add(group);
         }
 
         public new event PropertyChangedEventHandler PropertyChanged;

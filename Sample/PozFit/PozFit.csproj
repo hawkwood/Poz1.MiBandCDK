@@ -39,6 +39,9 @@
     </Compile>
     <Compile Include="Controls\BindableContentPage.cs" />
     <Compile Include="Controls\BindableListView.cs" />
+    <Compile Include="Controls\MainMenuGroup.cs" />
+    <Compile Include="Controls\MainMenuItem.cs" />
+    <Compile Include="Converters\NegateBoolConverter.cs" />
     <Compile Include="PozFitPage.xaml.cs">
       <DependentUpon>PozFitPage.xaml</DependentUpon>
     </Compile>

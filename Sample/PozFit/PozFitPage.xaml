@@ -1,12 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:PozFit" xmlns:control="clr-namespace:PozFit.Controls"  x:Class="PozFit.PozFitPage">
+<MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:PozFit" xmlns:control="clr-namespace:PozFit.Controls" xmlns:converter="clr-namespace:PozFit.Converters"  x:Class="PozFit.PozFitPage">
+    <MasterDetailPage.Resources>
+        <ResourceDictionary>
+            <converter:NegateBoolConverter x:Key="NegateBool"/>
+        </ResourceDictionary>
+    </MasterDetailPage.Resources>
+
     <MasterDetailPage.Detail>
         <NavigationPage BarTextColor="White" Title="PozFit">
             <x:Arguments>
                 <TabbedPage>
                     <TabbedPage.Children>
                         <control:BindableContentPage OnAppearingCommand="{Binding OnAppearingCommand}" Title="Devices">
-                            <control:BindableListView ItemsSource="{Binding BLEDevicesList}" ItemTappedCommand="{Binding ConnectToDeviceCommand}"></control:BindableListView>
+                            <Grid>
+                                <control:BindableListView ItemsSource="{Binding BLEDevicesList}" IsPullToRefreshEnabled="True" RefreshCommand="{Binding BLEScanCommand}" ItemTappedCommand="{Binding ConnectToDeviceCommand}" IsVisible="{Binding IsScanning, Converter={StaticResource NegateBool}}"></control:BindableListView>
+                                <ActivityIndicator IsVisible="{Binding IsScanning}" VerticalOptions="Center" HorizontalOptions="Center" IsRunning="True"></ActivityIndicator>
+                            </Grid>
                         </control:BindableContentPage>
                         <control:BindableContentPage Title="SDK">
                             <control:BindableListView ItemsSource="{Binding BLESDKCommands}" ItemTappedCommand="{Binding SDKCommand}">
@@ -22,8 +31,8 @@
         <control:BindableContentPage Title="PozFit">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="30*"></RowDefinition>
-                    <RowDefinition Height="70*"></RowDefinition>
+                    <RowDefinition Height="25*"></RowDefinition>
+                    <RowDefinition Height="75*"></RowDefinition>
                 </Grid.RowDefinitions>
 
                 <Grid>
@@ -38,6 +47,32 @@
                         <Label Grid.Row="2" Text="{Binding BatteryInfo.Level}"></Label>
                     </Grid>
                 </Grid>
+
+                <ListView Grid.Row="1" ItemsSource="{Binding BandInfos}" IsGroupingEnabled="true">
+                    <ListView.GroupHeaderTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Grid>
+                                    <Label Text="{Binding Title}" VerticalOptions="Center" Margin="5,0,5,0" FontAttributes="Bold"></Label>
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.GroupHeaderTemplate>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="35*"></ColumnDefinition>
+                                        <ColumnDefinition Width="65*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Text="{Binding Property}" VerticalOptions="Center" Margin="5,0,5,0"></Label>
+                                    <Label Grid.Column="1" Text="{Binding Value}" VerticalOptions="Center" Margin="5,0,5,0"></Label>
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </Grid>
         </control:BindableContentPage>
     </MasterDetailPage.Master>
